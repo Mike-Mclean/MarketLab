@@ -1,0 +1,76 @@
+###
+POST http://localhost:3025/new_order HTTP/1.1
+content-type: application/json
+
+{
+    "userName": "TestUser123",
+    "orderType": "buy-limit",
+    "stock_title": "Amazon",
+    "strike_price": 200.00,
+    "quantity": 2,
+    "executed": false
+}
+
+###
+POST http://localhost:3025/new_order HTTP/1.1
+content-type: application/json
+
+{
+    "userName": "TestUser123",
+    "orderType": "buy-stop",
+    "stock_title": "NVIDIA",
+    "strike_price": 200.00,
+    "quantity": 1,
+    "executed": false
+}
+
+###
+POST http://localhost:3025/new_order HTTP/1.1
+content-type: application/json
+
+{
+    "userName": "TestUser123",
+    "orderType": "sell-limit",
+    "stock_title": "Tesla",
+    "strike_price": 400.00,
+    "quantity": 1,
+    "executed": false
+}
+
+###
+POST http://localhost:3025/new_order HTTP/1.1
+content-type: application/json
+
+{
+    "userName": "TestUser123",
+    "orderType": "sell-stop",
+    "stock_title": "Apple",
+    "strike_price": 200.00,
+    "quantity": 1,
+    "executed": false
+}
+
+###
+GET http://localhost:3025/orders/TestUser123 HTTP/1.1
+Content-Type: application/json
+
+{
+    "orderType": "Buy"
+}
+
+###
+PUT http://localhost:3025/orders/TestUser123/Amazon  HTTP/1.1
+content-type: application/json
+
+{
+    "orderType": "Buy",
+    "strike_price": 200.00
+}
+
+###
+DELETE http://localhost:3025/orders/TestUser123/Amazon  HTTP/1.1
+content-type: application/json
+
+{
+    "orderType": "Buy"
+}

@@ -1,0 +1,75 @@
+###
+POST http://localhost:3050/purchase HTTP/1.1
+content-type: application/json
+
+{
+    "userName": "TestUser123",
+    "stock_title": "Amazon",
+    "stock_sym": "AMZN",
+    "amountOwned": 5
+}
+
+###
+POST http://localhost:3050/purchase HTTP/1.1
+content-type: application/json
+
+{
+    "userName": "TestUser123",
+    "stock_title": "NVIDIA",
+    "stock_sym" : "NVDA",
+    "amountOwned": 5
+}
+
+
+###
+POST http://localhost:3050/purchase HTTP/1.1
+content-type: application/json
+
+{
+    "userName": "TestUser123",
+    "stock_title": "Tesla",
+    "stock_sym": "TSLA",
+    "amountOwned": 5
+}
+
+###
+POST http://localhost:3050/purchase HTTP/1.1
+content-type: application/json
+
+{
+    "userName": "TestUser123",
+    "stock_title": "Apple",
+    "stock_sym": "AAPL",
+    "amountOwned": 5
+}
+
+###
+GET http://localhost:3050/user/TestUser123 HTTP/1.1
+
+###
+GET http://localhost:3050/user/TestUser123/Tesla HTTP/1.1
+
+###
+GET http://localhost:3050/user/TestUser124 HTTP/1.1
+
+###
+PUT http://localhost:3050/user/TestUser123/NVIDIA  HTTP/1.1
+content-type: application/json
+
+{
+    "amountOwned": 5
+}
+
+###
+PUT http://localhost:3050/user/TestUser123/Amazon  HTTP/1.1
+content-type: application/json
+
+{
+    "amountOwned": 10
+}
+
+###
+DELETE http://localhost:3050/user/TestUser123/NVDA  HTTP/1.1
+
+###
+DELETE http://localhost:3050/user/TestUser123/TSLA  HTTP/1.1
