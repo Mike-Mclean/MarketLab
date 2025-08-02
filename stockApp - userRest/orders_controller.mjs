@@ -1,29 +1,24 @@
-import 'dotenv/config';
 import * as orders from './orders_model.mjs';
 import express from 'express';
 import { checkSchema, validationResult } from 'express-validator';
 
-const PORT = process.env.PORT;
+const router = express.Router();
 
-const app = express();
-
-app.use(express.json());
-
-app.post('/new_order', checkSchema({
+router.post('/new_order', checkSchema({
     userName: {notEmpty: true, isLength: {options: {min: 1}}, isString: true},
     orderType: {notEmpty: true, isLength: {options: {min: 1}}, isString: true},
     stock_title: {notEmpty: true, isLength: {options: {min: 1}}, isString: true},
     strike_price: {notEmpty: true, isFloat: true, isFloat: {options: {gt: 0}}},
     quantity: {notEmpty: true, isFloat: true, isFloat: {options: {gt: 0}}},
     executed: {notEmpty: true, isBoolean: true}
-    }), 
+    }),
     (req, res) => {
         const result = validationResult(req);
         if (result.isEmpty()){
-            orders.createOrder(req.body.userName, 
-                                req.body.orderType, 
-                                req.body.stock_title, 
-                                req.body.strike_price, 
+            orders.createOrder(req.body.userName,
+                                req.body.orderType,
+                                req.body.stock_title,
+                                req.body.strike_price,
                                 req.body.quantity,
                                 req.body.executed)
             .then(order => {
@@ -40,7 +35,7 @@ app.post('/new_order', checkSchema({
     });
 
 
-app.get('/orders/:userName', (req, res) => {
+router.get('/orders/:userName', (req, res) => {
     const user = req.params.userName;
     const executed = req.body.executed;
     orders.findUserOrders(user, executed)
@@ -53,11 +48,11 @@ app.get('/orders/:userName', (req, res) => {
     })
 });
 
-app.put('/orders/:userName/:stock_title', (req, res) => {
-    orders.replaceOrder(req.params.userName, 
-                        req.body.orderType, 
-                        req.params.stock_title, 
-                        req.body.strike_price, 
+router.put('/orders/:userName/:stock_title', (req, res) => {
+    orders.replaceOrder(req.params.userName,
+                        req.body.orderType,
+                        req.params.stock_title,
+                        req.body.strike_price,
                         req.body.quantity,
                         req.body.executed)
     .then(modifiedCount => {
@@ -74,7 +69,7 @@ app.put('/orders/:userName/:stock_title', (req, res) => {
 
 });
 
-app.delete('/orders/:userName/:stock_title', (req, res) => {
+router.delete('/orders/:userName/:stock_title', (req, res) => {
     orders.deleteOrder(req.params.userName, req.body.orderType, req.params.stock_title)
         .then(deletedCount => {
             if (deletedCount === 1){
@@ -89,6 +84,4 @@ app.delete('/orders/:userName/:stock_title', (req, res) => {
         })
 });
 
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}...`);
-});
+export default router;

@@ -1,15 +1,4 @@
 import mongoose from 'mongoose';
-import 'dotenv/config';
-
-mongoose.connect(
-    process.env.MONGODB_CONNECT_STRING,
-    { useNewUrlParser: true }
-);
-
-const db = mongoose.connection;
-db.once("open", () => {
-    console.log("Successfully connected to MongoDB using Mongoose!");
-});
 
 //Order Schema
 const ordersSchema = mongoose.Schema({
@@ -25,9 +14,9 @@ const ordersSchema = mongoose.Schema({
 const Orders = mongoose.model("Orders", ordersSchema);
 
 const createOrder = async (userName, orderType, stock_title, strike_price, quantity, executed) => {
-    const order = new Orders({userName: userName, 
-                                    orderType: orderType, 
-                                    stock_title: stock_title, 
+    const order = new Orders({userName: userName,
+                                    orderType: orderType,
+                                    stock_title: stock_title,
                                     strike_price: strike_price,
                                     quantity: quantity,
                                     executed: executed});
@@ -47,11 +36,11 @@ const findUnexecutedOrder = async () => {
 
 const replaceOrder = async (_id, userName, orderType, stock_title, strike_price, quantity, executed) =>{
     const result = await Orders.replaceOne(
-        {_id: _id}, 
-        {userName: userName, 
-        orderType: orderType, 
-        stock_title: stock_title, 
-        strike_price: strike_price, 
+        {_id: _id},
+        {userName: userName,
+        orderType: orderType,
+        stock_title: stock_title,
+        strike_price: strike_price,
         quantity: quantity,
         executed: executed}
     );

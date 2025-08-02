@@ -1,15 +1,4 @@
 import mongoose from 'mongoose';
-import 'dotenv/config';
-
-mongoose.connect(
-    process.env.MONGODB_CONNECT_STRING,
-    { useNewUrlParser: true }
-);
-
-const db = mongoose.connection;
-db.once("open", () => {
-    console.log("Successfully connected to MongoDB using Mongoose!");
-});
 
 //User Schema
 const userFundsSchema = mongoose.Schema({
@@ -32,7 +21,7 @@ const findFundsByUserName = async (userName) => {
 
 const replaceUserFunds = async (userName, funds) =>{
     const result = await UserFunds.replaceOne(
-        {userName: userName}, 
+        {userName: userName},
         {userName: userName, funds:funds}
     );
     return result.modifiedCount;
