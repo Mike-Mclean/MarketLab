@@ -24,20 +24,40 @@ function UserForm({ onSubmit, buttonText, requireConfirmPassword = false }) {
 
     return (
         <form onSubmit={handleSubmit}>
-        <input type="text" value={username} onChange={(e) => setUser(e.target.value)} placeholder="Username" />
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
-        {requireConfirmPassword && (
-        <input
-          type="password"
-          placeholder="Retype Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-        />
-      )}
-        <button type="submit">{buttonText}</button>
-        {error && <div style={{ color: "red" }}>{error}</div>}
+
+            {requireConfirmPassword && (
+                <div class = "input-box">
+                    <input type="text" value={username} onChange={(e) => setUser(e.target.value)} placeholder=" " />
+                    <label>Username</label>
+                </div>
+            )}
+
+            <div class = "input-box">
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder=" " />
+                <label>Email</label>
+            </div>
+
+            <div class = "input-box">
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder=" "/>
+                <label>Password</label>
+            </div>
+
+            {requireConfirmPassword && (
+                <div class = "input-box">
+                    <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required placeholder=" "/>
+                    <label>Confirm Password</label>
+                </div>
+            )}
+
+            <div class="remember-me">
+                <label><input type="checkbox"></input>Remember me</label>
+                <a href="#">Forgot Password?</a>
+            </div>
+
+            <button type="submit">{buttonText}</button>
+
+
+            {error && <div style={{ color: "red" }}>{error}</div>}
         </form>
     );
 }
