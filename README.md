@@ -4,7 +4,6 @@ MarketLab is a full-stack stock trading simulation app. It allows users to regis
 
 ## Features
 - User registration and login
-- Secure authentication
 - View and manage virtual portfolio
 - Buy and sell stocks with simulated funds
 - Trading history and order management
