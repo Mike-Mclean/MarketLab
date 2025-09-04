@@ -1,21 +1,19 @@
-import * as userInfo from './userPortfolio_model.mjs';
+import * as userFunds from '../models/userFunds_model.mjs';
 import express from 'express';
 import { checkSchema, validationResult } from 'express-validator';
 
 const router = express.Router();
 
-router.post('/purchase', checkSchema({
+router.post('/new_funds', checkSchema({
     userName: {notEmpty: true, isLength: {options: {min: 1}}, isString: true},
-    stock_title: {notEmpty: true, isLength: {options: {min: 1}}, isString: true},
-    stock_sym: {notEmpty: true, isLength: {options: {min: 1}}, isString: true},
-    amountOwned: {notEmpty: true, isFloat: true, isFloat: {options: {gt: 0}}}
+    funds: {notEmpty: true, isFloat: true, isFloat: {options: {gt: 0}}}
     }),
     (req, res) => {
         const result = validationResult(req);
         if (result.isEmpty()){
-            userInfo.createUserStock(req.body.userName, req.body.stock_title, req.body.stock_sym, req.body.amountOwned)
-            .then(info => {
-                res.status(201).json(info);
+            userFunds.createUserFunds(req.body.userName, req.body.funds)
+            .then(funds => {
+                res.status(201).json(funds);
             })
             .catch(err =>{
                 console.error(err);
@@ -27,11 +25,11 @@ router.post('/purchase', checkSchema({
         }
     });
 
-router.get('/user/:userName', (req, res) => {
+router.get('/funds/:userName', (req, res) => {
     const user = req.params.userName;
-    userInfo.findAllUserStocks(user)
-    .then(userInfo => {
-        res.json(userInfo);
+    userFunds.findFundsByUserName(user)
+    .then(userFunds => {
+        res.json(userFunds);
     })
     .catch(error => {
         console.error(error);
@@ -39,24 +37,11 @@ router.get('/user/:userName', (req, res) => {
     })
 });
 
-router.get('/user/:userName/:stock_title', (req, res) => {
-    const user = req.params.userName;
-    const stock = req.params.stock_title
-    userInfo.findUserStockByUserName(user, stock)
-    .then(userInfo => {
-        res.json(userInfo);
-    })
-    .catch(error => {
-        console.error(error);
-        res.status(400).json({Error: 'Request failed'});
-    })
-});
-
-router.put('/user/:userName/:stock', (req, res) => {
-    userInfo.replaceUserStock(req.params.userName, req.params.stock, req.body.amountOwned)
+router.put('/funds/:userName', (req, res) => {
+    userFunds.replaceUserFunds(req.params.userName, req.body.funds)
     .then(modifiedCount => {
         if (modifiedCount === 1){
-            res.json({amountOwned: req.body.amountOwned})
+            res.json({funds: req.body.funds})
         } else {
             res.status(404).json({Error: 'Resource not found'});
         }
@@ -68,8 +53,8 @@ router.put('/user/:userName/:stock', (req, res) => {
 
 });
 
-router.delete('/user/:userName/:stock', (req, res) => {
-    userInfo.deleteById(req.params.userName, req.params.stock)
+router.delete('/funds/:userName', (req, res) => {
+    userFunds.deleteByUsername(req.params.userName)
         .then(deletedCount => {
             if (deletedCount === 1){
                 res.status(204).send();

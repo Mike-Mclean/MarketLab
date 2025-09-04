@@ -1,4 +1,4 @@
-import * as userInfo from './userHistory_model.mjs';
+import * as userInfo from '../models/userHistory_model.mjs';
 import express from 'express';
 import { checkSchema, validationResult } from 'express-validator';
 

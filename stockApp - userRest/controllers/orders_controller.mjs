@@ -1,4 +1,4 @@
-import * as orders from './orders_model.mjs';
+import * as orders from '../models/orders_model.mjs';
 import express from 'express';
 import { checkSchema, validationResult } from 'express-validator';
 
