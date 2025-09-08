@@ -8,7 +8,7 @@ const ordersSchema = mongoose.Schema({
     strike_price: {type: Number, required: true},
     quantity: {type: Number, required: true},
     executed: {type: Boolean, requried: true}},
-    {collection: 'Orders', versionKey: false
+    {collection: 'User Orders', versionKey: false
 });
 
 const Orders = mongoose.model("Orders", ordersSchema);

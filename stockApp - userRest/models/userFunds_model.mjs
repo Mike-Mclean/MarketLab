@@ -15,7 +15,7 @@ const createUserFunds = async (userName, funds) => {
 }
 
 const findFundsByUserName = async (userName) => {
-    const query = UserFunds.findOne({userName: userName});
+    const query = await UserFunds.findOne({userName: userName});
     return query.exec();
 }
 

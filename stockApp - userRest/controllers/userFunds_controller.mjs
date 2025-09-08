@@ -6,8 +6,7 @@ const router = express.Router();
 
 router.post('/new_funds', checkSchema({
     userName: {notEmpty: true, isLength: {options: {min: 1}}, isString: true},
-    funds: {notEmpty: true, isFloat: true, isFloat: {options: {gt: 0}}}
-    }),
+    funds: {notEmpty: true, isFloat: true, isFloat: {options: {gt: 0}}}}),
     (req, res) => {
         const result = validationResult(req);
         if (result.isEmpty()){

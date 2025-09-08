@@ -6,7 +6,7 @@ const userStockSchema = mongoose.Schema({
     stock_title: {type: String, requried: true},
     stock_sym: {type: String, requried: true},
     amountOwned: {type: Number, required: true}},
-    {collection: 'Profile Information', versionKey: false
+    {collection: 'User Portfolio', versionKey: false
 });
 
 const UserStock = mongoose.model("UserStock", userStockSchema);
