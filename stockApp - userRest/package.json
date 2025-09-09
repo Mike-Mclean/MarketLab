@@ -2,10 +2,10 @@
   "name": "stockapp---userrest",
   "version": "1.0.0",
   "description": "",
-  "main": "userFunds_controller.mjs",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon userFunds_controller.mjs"
+    "start": "nodemon server.mjs"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +14,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-validator": "^7.2.1",
+    "mongodb": "^6.19.0",
     "mongoose": "^7.1.0",
     "nodemon": "^3.1.9"
   }

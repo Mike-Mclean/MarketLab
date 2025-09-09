@@ -32,8 +32,5 @@ const deleteByUsername = async (userName) => {
     return result.deletedCount;
 }
 
-db.once("open", () => {
-    console.log("Successfully connected to MongoDB using Mongoose!");
-});
 
 export {createUserFunds, findFundsByUserName, replaceUserFunds, deleteByUsername}

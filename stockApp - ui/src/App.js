@@ -13,6 +13,7 @@ import SellConfirmationPage from './pages/SellConfirmationPage';
 import BuyOrderPage from './pages/BuyOrderPage';
 import TradingHistoryPage from './pages/TradingHistoryPage';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
   const[transactionStock, setTransactionStock] = useState();
@@ -23,7 +24,7 @@ function App() {
       <Router>
         <div>
           <Routes>
-            <Route path="/" element={<LoginPage/>}/>
+            <Route path="/" element={<RegisterPage/>}/>
             <Route path="/homepage" element={<HomePage setTransactionStock={setTransactionStock}/>}/>
             <Route path="/buy-stock" element={<BuyStockPage transactionStock={transactionStock}/>}/>
             <Route path="/purchase-confirmation" element={< PurchaseConfirmationPage/>}/>

@@ -61,9 +61,4 @@ const executeOrder = async (_id) => {
         return result.modifiedCount;
 }
 
-
-db.once("open", () => {
-    console.log("Successfully connected to MongoDB using Mongoose!");
-});
-
 export {createOrder, findUserOrders, findUnexecutedOrder, replaceOrder, deleteOrder, executeOrder}

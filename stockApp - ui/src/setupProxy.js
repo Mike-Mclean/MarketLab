@@ -16,7 +16,7 @@ module.exports = function (app) {
     app.use(
         "/user_api",
         createProxyMiddleware({
-            target: "http://localhost:3050",
+            target: "http://localhost:3075",
             changeOrigin: true,
             pathRewrite:{
                 "^/user_api":""
@@ -24,26 +24,5 @@ module.exports = function (app) {
         })
     );
 
-    app.use(
-        "/funds_api",
-        createProxyMiddleware({
-            target: "http://localhost:3075",
-            changeOrigin: true,
-            pathRewrite:{
-                "^/funds_api":""
-            }
-        })
-    );
-
-    app.use(
-        "/orders_api",
-        createProxyMiddleware({
-            target: "http://localhost:3025",
-            changeOrigin: true,
-            pathRewrite:{
-                "^/orders_api":""
-            }
-        })
-    );
 };
 

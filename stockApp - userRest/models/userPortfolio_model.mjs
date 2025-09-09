@@ -43,8 +43,4 @@ const deleteById = async (userName, stock) => {
     return result.deletedCount;
 }
 
-db.once("open", () => {
-    console.log("Successfully connected to MongoDB using Mongoose!");
-});
-
 export {createUserStock, findUserStockByUserName, replaceUserStock, deleteById, findAllUserStocks};

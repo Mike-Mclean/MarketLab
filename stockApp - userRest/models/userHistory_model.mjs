@@ -29,8 +29,4 @@ const findAllUserHistory = async (userName) => {
     return query.exec();
 }
 
-db.once("open", () => {
-    console.log("Successfully connected to MongoDB using Mongoose!");
-});
-
 export {addHistory, findAllUserHistory};
