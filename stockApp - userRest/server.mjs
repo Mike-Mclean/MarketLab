@@ -4,7 +4,7 @@ import ordersRouter from './controllers/orders_controller.mjs';
 import userFundsRouter from './controllers/userFunds_controller.mjs';
 import userHistoryRouter from './controllers/userHistory_controller.mjs';
 import userPortfolioRouter from './controllers/userPortfolio_controller.mjs';
-import userRegisterRouter from './controllers/register_controller.mjs';
+import userRegisterRouter from './controllers/registerLogin_controller.mjs';
 import db from './db.js'
 
 const PORT = process.env.PORT || 3075;

@@ -35,8 +35,7 @@ function App() {
             <Route path="/sell-confirmation" element={<SellConfirmationPage/>}/>
             <Route path="/buy-order" element={<BuyOrderPage transactionStock={transactionStock}/>}/>
             <Route path="/history/:username" element={<TradingHistoryPage/>}/>
-            <Route path="/login"/>
-            <Route path="/register"/>
+            <Route path="/login" element={<LoginPage/>}/>
           </Routes>
         </div>
       </Router>

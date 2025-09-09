@@ -90,7 +90,7 @@ const LoginPage = () => {
           Need an account?<br/>
           <span className="line">
             {/*add router link*/}
-            <a href='#'>Sign up</a>
+            <a href='/'>Sign up</a>
           </span>
         </p>
     </section>

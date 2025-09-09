@@ -169,7 +169,7 @@ const RegisterPage = () => {
           Already have an account?<br/>
           <span className="line">
             {/*add router link*/}
-            <a href='#'>Sign In</a>
+            <a href='/login'>Sign In</a>
           </span>
         </p>
     </section>
