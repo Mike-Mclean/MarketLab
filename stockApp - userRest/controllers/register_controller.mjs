@@ -1,10 +1,10 @@
 import express from 'express';
 import { checkSchema, validationResult } from 'express-validator';
-import { handleNewUser, handleLogin } from '../models/registerLogin_model.mjs';
+import { handleNewUser, handleLogin, handleRefreshToken } from '../models/registerLogin_model.mjs';
 
 const router = express.Router();
 
-function validateAndHandle(req, res, handler){
+export function validateAndHandle(req, res, handler){
     const isNotValid = validationResult(req);
         if (isNotValid.isEmpty()){
             handler(req, res);
@@ -20,14 +20,5 @@ router.post('/', checkSchema({
     (req, res) => {
         validateAndHandle(req, res, handleNewUser);
     });
-
-router.post('/login', checkSchema({
-    user: {notEmpty: true},
-    pwd: {notEmpty: true}}),
-    (req, res) => {
-        validateAndHandle(req, res, handleLogin);
-    });
-
-
 
 export default router;
