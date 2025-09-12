@@ -6,7 +6,7 @@ import 'dotenv/config';
 const usersSchema = mongoose.Schema({
     user: {type: String, required: true},
     pwd: {type: String, required: true},
-    refToken: {type: String, default: []}
+    refToken: {type: Array, default: []}
 }, {
     collection: 'Users',
     versionKey: false
@@ -49,8 +49,11 @@ const handleLogin = async (req, res) => {
             process.env.REFRESH_TOKEN_SECRET,
             {expiresIn: '1d'}
         );
-        res.cookie('jwt', refreshToken, {httpOnly: true, maxAge: 24 * 60 * 60 * 1000})
-        foundUser.refToken.push(refreshToken);
+        res.cookie('jwt', refreshToken, {httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000})
+        await User.updateOne(
+            { user: foundUser.user },
+            {$push: {refToken: refreshToken}}
+        );
         res.json({ accessToken});
     } else {
         res.sendStatus(401);
@@ -60,7 +63,6 @@ const handleLogin = async (req, res) => {
 const handleRefreshToken = async (req, res) => {
     const cookies = req.cookies;
     if (!cookies?.jwt) return res.sendStatus(401);
-    console.log(cookies.jwt);
     const refreshToken = cookies.jwt;
 
     const foundUser = await User.findOne({refToken: refreshToken})
@@ -69,15 +71,35 @@ const handleRefreshToken = async (req, res) => {
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
         (err, decoded) => {
-            if (errr || foundUser.user !== decoded.user) return res.sendStatus(403);
+            if (err || foundUser.user !== decoded.username) return res.sendStatus(403);
             const accessToken = jwt.sign(
-                {"username": decoded.user},
+                {"username": decoded.username},
                 process.env.ACCESS_TOKEN_SECRET,
                 { expiresIn: '300s'}
             );
             res.json({accessToken})
         }
-    )
+    );
+}
+const handleLogout = async (req, res) => {
+    // On client, acessToken needs to be deleted.
+    const cookies = req.cookies;
+    if (!cookies?.jwt) return res.sendStatus(204);
+    const refreshToken = cookies.jwt;
+
+    const foundUser = await User.findOne({refToken: refreshToken})
+    if (!foundUser) {
+        res.clearCookie('jwt', {httpOnly: true, sameSite: 'None', secure: true});
+        return res.sendStatus(204);
+    }
+    //Delete refreshToken in db
+    await User.updateOne(
+        {refToken: refreshToken},
+        {$pull: {refToken: refreshToken}}
+    );
+
+    res.clearCookie('jwt', {httpOnly: true, sameSite: 'None', secure: true}); //made add secure: true to serve https
+    res.sendStatus(204)
 }
 
-export {handleNewUser, handleLogin, handleRefreshToken}
+export {handleNewUser, handleLogin, handleRefreshToken, handleLogout}

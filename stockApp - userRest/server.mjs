@@ -7,6 +7,7 @@ import userPortfolioRouter from './controllers/userPortfolio_controller.mjs';
 import userRegisterRouter from './controllers/register_controller.mjs';
 import loginRouter from './controllers/login_controller.mjs';
 import refreshTokenRouter from './controllers/refreshToken_controller.mjs';
+import logoutRouter from './controllers/logout_controller.mjs'
 import db from './db.js'
 import verifyJWT from './services/verifyJWT.mjs';
 import cookieParser from 'cookie-parser';
@@ -19,6 +20,7 @@ app.use(cookieParser());
 app.use('/register', userRegisterRouter);
 app.use('/login', loginRouter);
 app.use('/refresh', refreshTokenRouter);
+app.use('/logout', logoutRouter);
 
 app.use(verifyJWT);
 app.use('/orders', ordersRouter);

@@ -1,6 +1,6 @@
 import express from 'express';
 import { checkSchema, validationResult } from 'express-validator';
-import { handleNewUser, handleLogin, handleRefreshToken } from '../models/registerLogin_model.mjs';
+import { handleNewUser} from '../models/registerLogin_model.mjs';
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ export function validateAndHandle(req, res, handler){
             handler(req, res);
         } else {
             console.error(isNotValid.array());
-            res.status(400).json({Error: 'invalid request', details: result.array()});
+            res.status(400).json({Error: 'invalid request', details: isNotValid.array()});
         }
 }
 
