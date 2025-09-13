@@ -45,7 +45,7 @@ function HomePage({ setTransactionStock}) {
                 const doc = JSON.parse(text);
                 if (doc.success){
                     return fetch("/database.txt")
-                } 
+                }
             }catch (error){
                 console.error("Error parsing JSON:", error);
             }
@@ -76,14 +76,14 @@ function HomePage({ setTransactionStock}) {
                 <button className='basic-buttons' onClick={() => navigate('/add-funds', {userfunds, setUserFunds})}>Add Funds</button>
                 <button className='basic-buttons' onClick={() => navigate(`/user/${user}`)}>Profile</button>
             </header>
-            <StockList 
-            stocks={stocks} 
-            onBuy={onBuy} 
-            onSell={null} 
+            <StockList
+            stocks={stocks}
+            onBuy={onBuy}
+            onSell={null}
             columns={homepageColumns}
             placeOrder={placeOrder}
             ></StockList>
-            <footer>Get experience trading! Your trades are completely risk free, money on this platform isn't real!</footer>
+            
         </div>
     );
 }

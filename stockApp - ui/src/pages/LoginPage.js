@@ -1,12 +1,14 @@
 import { useRef, useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthProvider";
 
-const LOGIN_URL = '/auth'
+const LOGIN_URL = '/user_api/login'
 
 const LoginPage = () => {
   const { setAuth } = useContext(AuthContext);
   const userRef = useRef();
   const errRef = useRef();
+  const navigate = useNavigate();
 
   const [ user, setUser] = useState('');
   const [ pwd, setPwd] = useState('');
@@ -34,7 +36,7 @@ const LoginPage = () => {
     });
 
     if (!response.ok) {
-        throw new Error("Login failed");
+      throw new Error("Login failed");
     }
     const data = await response.json()
     console.log(data)
@@ -42,6 +44,7 @@ const LoginPage = () => {
     setAuth({ user, pwd, accessToken});
     setUser('');
     setPwd('');
+    navigate('/homepage')
     } catch (err){
       if (!err?.resposne) {
         setErrMsg('No server response')
