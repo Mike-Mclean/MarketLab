@@ -68,3 +68,28 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Adding Tailwind CSS
+
+This project uses Create React App. To add Tailwind CSS (already wired in this repo with config files), run from the `stockApp - ui` folder:
+
+1. Install dev dependencies:
+
+```
+npm install -D tailwindcss postcss autoprefixer
+```
+
+2. (Optional) Generate config files using the Tailwind CLI (configs were added in the repo):
+
+```
+npx tailwindcss init -p
+```
+
+3. Start the dev server:
+
+```
+npm start
+```
+
+Now you can use Tailwind utility classes in your React components. For production builds, CRA will process Tailwind via PostCSS during `npm run build`.
+
