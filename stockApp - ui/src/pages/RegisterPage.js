@@ -78,11 +78,20 @@ const RegisterPage = () => {
 
 
   return (
-    <section>
+    <section className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <img
+            alt="MarketLab"
+            src="stockApp - ui\src\MarketLab.png"
+            className="mx-auto h-10 w-auto"
+          />
         <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
-        <h1>Register</h1>
+        <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-black">Register</h1>
+      </div>
+
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form onSubmit={handleSubmit}>
-          <label htmlFor="username">
+          <label htmlFor="username" className="block text-sm/6 font-medium text-black-100">
             Username:
             <span className={validName ? "valid" : "hide"}>
               <FontAwesomeIcon icon={faCheck}/>
@@ -103,6 +112,7 @@ const RegisterPage = () => {
             aria-describedby="uidnote"
             onFocus={() => setUserFocus(true)}
             onBlur={() => setUserFocus(false)}
+            className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
           />
 
           <p id="uidnote" className={userFocus && user && !validName ? "instructions" : "offscreen"}> <FontAwesomeIcon icon={faInfoCircle} />
@@ -111,7 +121,7 @@ const RegisterPage = () => {
             Letters, number, underscores, hyphens allowed.
           </p>
 
-          <label htmlFor="password">
+          <label htmlFor="password" className="block text-sm/6 font-medium text-black-100">
             Password:
             <span className={validPwd ? "valid" : "hide"}>
               <FontAwesomeIcon icon={faCheck}/>
@@ -130,6 +140,7 @@ const RegisterPage = () => {
             aria-describedby="pwdnote"
             onFocus={() => setPwdFocus(true)}
             onBlur={() => setPwdFocus(false)}
+            className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
           />
 
           <p id="pwdnote" className={pwdFocus && !validPwd ? "instructions" : "offscreen"}> <FontAwesomeIcon icon={faInfoCircle} />
@@ -138,7 +149,7 @@ const RegisterPage = () => {
             Allowed special characters: <span aria-label="exclamation mark">!</span> <span aria-label="at symbol">@</span> <span aria-label="hashtag">#</span> <span aria-label="dollar sign">$</span><span aria-label="percent">%</span>
           </p>
 
-          <label htmlFor="confirm_pwd">
+          <label htmlFor="confirm_pwd" className="block text-sm/6 font-medium text-black-100">
             Confirm Password:
             <span className={validMatch && matchPwd ? "valid" : "hide"}>
               <FontAwesomeIcon icon={faCheck}/>
@@ -157,21 +168,30 @@ const RegisterPage = () => {
             aria-describedby="confirmnote"
             onFocus={() => setMatchFocus(true)}
             onBlur={() => setMatchFocus(false)}
+            className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
           />
 
           <p id="confirmnote" className={matchFocus && !validMatch ? "instructions" : "offscreen"}> <FontAwesomeIcon icon={faInfoCircle} />
             Must match the first password input field.
           </p>
 
-          <button disabled={!validName || !validPwd || !validMatch ? true : false}>Sign Up</button>
+          <button disabled={!validName || !validPwd || !validMatch ? true : false}
+                  className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+          >
+            Sign Up
+          </button>
         </form>
-        <p>
-          Already have an account?<br/>
-          <span className="line">
-            {/*add router link*/}
-            <a href='/login'>Sign In</a>
-          </span>
+      </div>
+
+      <div className="text-center">
+        <p className="mt-10 text-xl/9 font-bold tracking-tight text-black">
+          Already have an account?
         </p>
+        {/*add router link*/}
+        <a href='/login' className="font-semibold text-indigo-400 hover:text-indigo-300">
+          Sign In
+        </a>
+      </div>
     </section>
 
   )
