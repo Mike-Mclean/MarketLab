@@ -78,12 +78,12 @@ const RegisterPage = () => {
 
 
   return (
-    <section className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <section className="h-screen flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 bg-orange-100 ">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
             alt="MarketLab"
-            src="stockApp - ui\src\MarketLab.png"
-            className="mx-auto h-10 w-auto"
+            src="/chemistry-flask-icon.webp"
+            className="mx-auto h-20 w-auto"
           />
         <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
         <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-black">Register</h1>
@@ -192,8 +192,9 @@ const RegisterPage = () => {
           Sign In
         </a>
       </div>
-    </section>
 
+
+    </section>
   )
 }
 
