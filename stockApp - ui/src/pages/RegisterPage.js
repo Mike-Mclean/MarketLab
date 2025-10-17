@@ -78,7 +78,7 @@ const RegisterPage = () => {
 
 
   return (
-    <section className="h-screen bg-gradient-to-b from-red-400 to-orange-300 flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <section className="h-screen bg-gradient-to-b from-sky-400 to-orange-300 flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
             alt="MarketLab"
@@ -86,7 +86,7 @@ const RegisterPage = () => {
             className="mx-auto h-20 w-auto"
           />
         <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
-        <h1 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-black">Register</h1>
+        <h1 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-black">Register</h1>
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -172,25 +172,24 @@ const RegisterPage = () => {
           )}
 
           <br/>
-            <button disabled={!validName || !validPwd || !validMatch ? true : false}
-                    className="flex w-full justify-center rounded-md bg-red-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-red-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
-            >
-              Sign Up
-            </button>
+
+          <button disabled={!validName || !validPwd || !validMatch ? true : false}
+                  className="flex w-full justify-center rounded-md bg-red-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-red-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+          >
+            Sign Up
+          </button>
 
         </form>
       </div>
 
       <div className="text-center">
         <p className="mt-10 text-xl/9 font-bold tracking-tight text-black">
-          Already have an account?
+          Already have an account? <br/>
+          <a href='/login' class="font-semibold text-red-500 hover:text-red-400">
+            Sign In
+          </a>
         </p>
-        {/*add router link*/}
-        <a href='/login' className="font-semibold text-red-500 hover:text-red-400">
-          Sign In
-        </a>
       </div>
-
 
     </section>
   )
