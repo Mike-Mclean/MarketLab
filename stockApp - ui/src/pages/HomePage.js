@@ -2,6 +2,10 @@ import { useState} from 'react';
 
 function HomePage() {
     const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [snapshotStockData, setSnapshotStockData] = useState([
+        { symbol: "AAPL", price: 0, change: +0.3 },
+        { symbol: "TSLA", price: 0, change: -1.2 },
+        { symbol: "MSFT", price: 0, change: +1.0 }]);
 
     const mockPortfolio = {
         value: 10250.75,
@@ -14,6 +18,17 @@ function HomePage() {
         { symbol: "TSLA", price: 251.4, change: -1.2 },
         { symbol: "MSFT", price: 410.88, change: +1.0 }
     ]
+
+    const getStockPrice = async (stockSymbol) => {
+        const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stockSymbol}&apikey=7I47F6Q1XN2NZRU2`);
+
+        const prices = response.data["Time Series (Daily)"];
+        const lastTradingDay = Object.keys(prices)[0]
+        console.log(lastTradingDay)
+        const stockPrice = prices[lastTradingDay]["4. close"]
+
+        return stockPrice
+    }
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
