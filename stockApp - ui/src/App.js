@@ -24,8 +24,8 @@ function App() {
       <Router>
         <div>
           <Routes>
-            <Route path="/" element={<RegisterPage/>}/>
-            <Route path="/homepage" element={<HomePage setTransactionStock={setTransactionStock}/>}/>
+            <Route path="/" element={<HomePage/>}/>
+            <Route path="/register" element={<RegisterPage/>}/>
             <Route path="/buy-stock" element={<BuyStockPage transactionStock={transactionStock}/>}/>
             <Route path="/purchase-confirmation" element={< PurchaseConfirmationPage/>}/>
             <Route path="/help" element={<HelpPage />}/>

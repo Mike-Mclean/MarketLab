@@ -1,4 +1,4 @@
-import { useState} from 'react';
+import { useState, useEffect} from 'react';
 
 function HomePage() {
     const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -13,22 +13,58 @@ function HomePage() {
         dailyChange: 1.24
     };
 
-    const mockMarketData = [
-        { symbol: "AAPL", price: 189.22, change: +0.3 },
-        { symbol: "TSLA", price: 251.4, change: -1.2 },
-        { symbol: "MSFT", price: 410.88, change: +1.0 }
-    ]
+    const updateStockPrice = (symbol, newPrice) => {
+        setSnapshotStockData(prevData =>
+            prevData.map(stock =>
+            stock.symbol === symbol ? { ...stock, price: newPrice } : stock
+            )
+        );
+    };
 
-    const getStockPrice = async (stockSymbol) => {
-        const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stockSymbol}&apikey=7I47F6Q1XN2NZRU2`);
+    const updateStockChange = (symbol, newChange) => {
+        setSnapshotStockData(prevData =>
+            prevData.map(stock =>
+            stock.symbol === symbol ? { ...stock, change: newChange } : stock
+            )
+        );
+    };
 
-        const prices = response.data["Time Series (Daily)"];
-        const lastTradingDay = Object.keys(prices)[0]
-        console.log(lastTradingDay)
-        const stockPrice = prices[lastTradingDay]["4. close"]
+    const getStockData = async (stockSymbol) => {
+        try {
+            const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stockSymbol}&apikey=7I47F6Q1XN2NZRU2`);
+            const data = await response.json();
+            const prices = data["Time Series (Daily)"];
+            const lastTradingDay = Object.keys(prices)[0];
+            const secondLastTradingDay = Object.keys(prices)[1];
 
-        return stockPrice
+            const stockPrice = Number(prices[lastTradingDay]["4. close"]);
+            const prevStockPrice = Number(prices[secondLastTradingDay]["4. close"]);
+
+            const percentChange = (stockPrice/prevStockPrice - 1) * 100;
+
+            return {newPrice: stockPrice.toFixed(2), newChange: percentChange};
+
+        } catch (error) {
+            console.error("Error Fetching stock price:", error);
+            return {newPrice: 100, newChange: 10};
+        }
     }
+
+    useEffect(() => {
+        async function updateStocks() {
+            for(let i = 0; i < snapshotStockData.length; i++) {
+                let symbol = snapshotStockData[i].symbol;
+                let newData =  await getStockData(symbol);
+                console.log(newData);
+                let price = newData.newPrice;
+                let change = newData.newChange;
+                console.log(price, change);
+                updateStockPrice(symbol, price);
+                updateStockChange(symbol, change);
+            };
+        }
+        updateStocks();
+    }, []);
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
@@ -109,14 +145,14 @@ function HomePage() {
                 <section>
                     <h3 className="text-lg font-semibold mb-4">Market Snapshot</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        {mockMarketData.map((stock) => (
+                        {snapshotStockData.map((stock) => (
                             <div
                                 key={stock.symbol}
                                 className="bg-white shadow rounded-xl p-4 flex justify-between items-center"
                             >
                                 <div>
                                     <p className="font-semibold">{stock.symbol}</p>
-                                    <p className="text-gray-500">${stock.price.toFixed(2)}</p>
+                                    <p className="text-gray-500">${stock.price}</p>
                                 </div>
                                 <span
                                     className={`font-semibold ${
