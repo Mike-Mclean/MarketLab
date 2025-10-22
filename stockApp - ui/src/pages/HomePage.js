@@ -1,11 +1,14 @@
 import { useState, useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function HomePage() {
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [snapshotStockData, setSnapshotStockData] = useState([
-        { symbol: "AAPL", price: 0, change: +0.3 },
-        { symbol: "TSLA", price: 0, change: -1.2 },
-        { symbol: "MSFT", price: 0, change: +1.0 }]);
+        { symbol: "AAPL", price: 0, change: 0 },
+        { symbol: "TSLA", price: 0, change: 0 },
+        { symbol: "MSFT", price: 0, change: 0 }]);
+
 
     const mockPortfolio = {
         value: 10250.75,
@@ -86,7 +89,7 @@ function HomePage() {
                         </button>
                     ) : (
                         <button
-                        onClick={() => setIsLoggedIn(true)}
+                        onClick={() => navigate("/login")}
                         className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
                         >
                         Login
@@ -105,7 +108,8 @@ function HomePage() {
                     <p className="text-gray-600 mb-6">
                         Start with virtual cash, trade live market data, and improve your strategy.
                     </p>
-                    <button className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition">
+                    <button className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition"
+                    onClick={() => navigate("/register")}>
                         Start Trading
                     </button>
                 </section>

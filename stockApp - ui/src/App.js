@@ -1,5 +1,4 @@
 import './App.css';
-import React from 'react';
 import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import BuyStockPage from './pages/BuyStockPage';
@@ -26,6 +25,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage/>}/>
             <Route path="/register" element={<RegisterPage/>}/>
+            <Route path="/login" element={<LoginPage/>}/>
             <Route path="/buy-stock" element={<BuyStockPage transactionStock={transactionStock}/>}/>
             <Route path="/purchase-confirmation" element={< PurchaseConfirmationPage/>}/>
             <Route path="/help" element={<HelpPage />}/>
@@ -35,7 +35,7 @@ function App() {
             <Route path="/sell-confirmation" element={<SellConfirmationPage/>}/>
             <Route path="/buy-order" element={<BuyOrderPage transactionStock={transactionStock}/>}/>
             <Route path="/history/:username" element={<TradingHistoryPage/>}/>
-            <Route path="/login" element={<LoginPage/>}/>
+
           </Routes>
         </div>
       </Router>

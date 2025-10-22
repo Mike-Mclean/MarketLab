@@ -107,14 +107,14 @@ const LoginPage = () => {
           <button class="flex w-full justify-center rounded-md bg-red-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-red-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">
             Log In
           </button>
-          
+
         </form>
 
         <div class="text-center">
           <p class="mt-10 text-xl/9 font-bold tracking-tight text-black">
             Need an account?
             <br/>
-            <a href='/' class="font-semibold text-red-500 hover:text-red-400">
+            <a href='/register' class="font-semibold text-red-500 hover:text-red-400">
               Sign up
             </a>
           </p>
