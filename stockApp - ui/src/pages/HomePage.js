@@ -1,9 +1,12 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect, useContext} from 'react';
+import AuthContext, { AuthProvider } from '../context/AuthProvider';
 import { useNavigate } from 'react-router-dom';
+
+const AV_KEY = process.env.AV_KEY
 
 function HomePage() {
     const navigate = useNavigate();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const {auth ,setAuth} = useContext(AuthContext);
     const [snapshotStockData, setSnapshotStockData] = useState([
         { symbol: "AAPL", price: 0, change: 0 },
         { symbol: "TSLA", price: 0, change: 0 },
@@ -34,7 +37,7 @@ function HomePage() {
 
     const getStockData = async (stockSymbol) => {
         try {
-            const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stockSymbol}&apikey=7I47F6Q1XN2NZRU2`);
+            const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stockSymbol}&apikey=${AV_KEY}`);
             const data = await response.json();
             const prices = data["Time Series (Daily)"];
             const lastTradingDay = Object.keys(prices)[0];
@@ -45,7 +48,7 @@ function HomePage() {
 
             const percentChange = (stockPrice/prevStockPrice - 1) * 100;
 
-            return {newPrice: stockPrice.toFixed(2), newChange: percentChange};
+            return {newPrice: stockPrice.toFixed(2), newChange: percentChange.toFixed(2)};
 
         } catch (error) {
             console.error("Error Fetching stock price:", error);
@@ -80,9 +83,9 @@ function HomePage() {
                     <button className="text-gray-700 hover:text-indigo-600">Trade</button>
                 </nav>
                 <div>
-                    {isLoggedIn ? (
+                    {auth?.accessToken ? (
                         <button
-                        onClick={() => setIsLoggedIn(false)}
+                        onClick={() => setAuth({})}
                         className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg"
                         >
                         Logout
@@ -100,7 +103,7 @@ function HomePage() {
 
             <main className="flex-grow px-6 py-10 max-w-5xl mx-auto">
                 {/*Portfolio */}
-                {!isLoggedIn ? (
+                {!auth?.accessToken ? (
                 <section className="text-center mb-10">
                     <h2 className="text-3xl font-semibold mb-4">
                         Practice trading stocks in real time — risk free.

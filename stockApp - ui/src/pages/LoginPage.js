@@ -44,7 +44,7 @@ const LoginPage = () => {
     setAuth({ user, pwd, accessToken});
     setUser('');
     setPwd('');
-    navigate('/homepage')
+    navigate('/')
     } catch (err){
       if (!err?.resposne) {
         setErrMsg('No server response')
