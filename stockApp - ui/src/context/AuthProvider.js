@@ -3,16 +3,33 @@ import { createContext, useState, useEffect } from "react";
 const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
-    const  [auth, setAuth] = useState({});
+    const  [auth, setAuth] = useState(() => {
+        const storedAuth = localStorage.getItem("auth");
+        return storedAuth ? JSON.parse(storedAuth) : {}
+    });
+
+    useEffect(() => {
+    if (auth?.accessToken) {
+      localStorage.setItem("auth", JSON.stringify(auth));
+    } else {
+      localStorage.removeItem("auth");
+    }
+  }, [auth]);
 
     useEffect(() => {
         const tryRefresh = async () => {
-            const response = await fetch ("/refresh", {
-                method: "GET",
-                credentials: "include"
-            });
-            const data = await response.json();
-            setAuth({accessToken: data.accessToken});
+            try{
+                const response = await fetch ("/refresh", {
+                    method: "GET",
+                    credentials: "include"
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setAuth({accessToken: data.accessToken});
+                }
+            } catch (err){
+                console.error("Auto-refresh failed", err)
+            }
         };
 
         tryRefresh()

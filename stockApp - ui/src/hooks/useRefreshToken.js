@@ -1,7 +1,9 @@
 import useAuth from "./useAuth";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthProvider";
 
 const useRefreshToken = () => {
-    const {setAuth} = useAuth();
+    const {setAuth} = useContext(AuthContext);
 
     const refresh = async () => {
         try{
@@ -9,7 +11,10 @@ const useRefreshToken = () => {
                 method: "GET",
                 credentials: "include",
                 headers: {"Content-Type": "application/json"}
-            })
+            });
+
+            if (!response.ok) throw new Error("Failed to refresh token");
+            
             const data = await response.json()
 
             if(!response.ok) throw new Error("failed to refresh token")

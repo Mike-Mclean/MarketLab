@@ -40,7 +40,7 @@ const LoginPage = () => {
     }
     const data = await response.json()
     const accessToken = data?.accessToken;
-    setAuth({ user, pwd, accessToken});
+    setAuth({ user, accessToken});
     setUser('');
     setPwd('');
     navigate('/')

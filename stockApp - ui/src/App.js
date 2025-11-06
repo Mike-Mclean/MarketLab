@@ -15,7 +15,6 @@ import RegisterPage from './pages/RegisterPage';
 import { AuthProvider } from './context/AuthProvider';
 
 function App() {
-  const[transactionStock, setTransactionStock] = useState();
   const[funds, setFunds] = useState(0);
 
   return (
@@ -26,14 +25,6 @@ function App() {
               <Route path="/" element={<HomePage/>}/>
               <Route path="/register" element={<RegisterPage/>}/>
               <Route path="/login" element={<LoginPage/>}/>
-              <Route path="/buy-stock" element={<BuyStockPage transactionStock={transactionStock}/>}/>
-              <Route path="/purchase-confirmation" element={< PurchaseConfirmationPage/>}/>
-              <Route path="/add-funds" element={<AddFundsPage funds={funds} setFunds={setFunds}/>}/>
-              <Route path='/user/:username' element={<ProfilePage setTransactionStock={setTransactionStock}/>}/>
-              <Route path="/sell-stock" element={<SellStockPage transactionStock={transactionStock}/>}/>
-              <Route path="/sell-confirmation" element={<SellConfirmationPage/>}/>
-              <Route path="/buy-order" element={<BuyOrderPage transactionStock={transactionStock}/>}/>
-              <Route path="/history/:username" element={<TradingHistoryPage/>}/>
             </Routes>
         </Router>
       </div>
