@@ -2,7 +2,7 @@ import { useRef, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthProvider";
 
-const LOGIN_URL = '/user_api/login'
+const LOGIN_URL = '/login'
 
 const LoginPage = () => {
   const { setAuth } = useContext(AuthContext);
@@ -39,7 +39,6 @@ const LoginPage = () => {
       throw new Error("Login failed");
     }
     const data = await response.json()
-    console.log(data)
     const accessToken = data?.accessToken;
     setAuth({ user, pwd, accessToken});
     setUser('');

@@ -3,6 +3,13 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 
+const getCookieOptions = () => ({
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'Lax' : 'None',
+    maxAge: 24 * 60 * 60 * 1000
+});
+
 const usersSchema = mongoose.Schema({
     user: {type: String, required: true},
     pwd: {type: String, required: true},
@@ -49,7 +56,7 @@ const handleLogin = async (req, res) => {
             process.env.REFRESH_TOKEN_SECRET,
             {expiresIn: '1d'}
         );
-        res.cookie('jwt', refreshToken, {httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000})
+    res.cookie('jwt', refreshToken, getCookieOptions())
         await User.updateOne(
             { user: foundUser.user },
             {$push: {refToken: refreshToken}}
@@ -82,14 +89,13 @@ const handleRefreshToken = async (req, res) => {
     );
 }
 const handleLogout = async (req, res) => {
-    // On client, acessToken needs to be deleted.
     const cookies = req.cookies;
     if (!cookies?.jwt) return res.sendStatus(204);
     const refreshToken = cookies.jwt;
 
     const foundUser = await User.findOne({refToken: refreshToken})
     if (!foundUser) {
-        res.clearCookie('jwt', {httpOnly: true, sameSite: 'None', secure: true});
+        res.clearCookie('jwt', getCookieOptions());
         return res.sendStatus(204);
     }
     //Delete refreshToken in db
@@ -98,7 +104,7 @@ const handleLogout = async (req, res) => {
         {$pull: {refToken: refreshToken}}
     );
 
-    res.clearCookie('jwt', {httpOnly: true, sameSite: 'None', secure: true}); //made add secure: true to serve https
+    res.clearCookie('jwt', getCookieOptions());
     res.sendStatus(204)
 }
 

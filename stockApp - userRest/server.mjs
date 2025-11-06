@@ -11,9 +11,26 @@ import logoutRouter from './controllers/logout_controller.mjs'
 import db from './db.js'
 import verifyJWT from './services/verifyJWT.mjs';
 import cookieParser from 'cookie-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import cors from 'cors';
 
 const PORT = process.env.PORT || 3075;
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const allowedOrigins = [
+  'http://localhost:3000'
+];
+
+const corsOptions = {
+  origin: allowedOrigins,
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -27,6 +44,18 @@ app.use('/orders', ordersRouter);
 app.use('/funds', userFundsRouter);
 app.use('/history', userHistoryRouter);
 app.use('/portfolio', userPortfolioRouter);
+
+if (process.env.NODE_ENV === 'production') {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
+    const clientBuildPath = path.join(__dirname, '..', 'stockApp - ui', 'build');
+    app.use(express.static(clientBuildPath));
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(clientBuildPath, 'index.html'));
+    });
+}
 
 
 app.listen(PORT, () => {
