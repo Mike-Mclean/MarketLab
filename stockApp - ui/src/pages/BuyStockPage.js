@@ -3,67 +3,40 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useState} from 'react';
 import '../App.css';
 
-export const BuyStockPage = ({transactionStock}) => {
-
-    const [title] = useState(transactionStock.title);
-    const [sym] = useState(transactionStock.sym);
-    const [price] = useState(transactionStock.price);
-    const [quantity, setQuantity] = useState("");
+const BuyStockPage = () => {
+    const mockPortfolio = {
+        value: 10250.75,
+        cash: 750.25,
+        dailyChange: 1.24
+    };
     const navigate = useNavigate();
-    const total = price * (Number(quantity) || 0);
-    const location = useLocation()
-    const userfunds = location.state?.userfunds || 0;
-    const user = location.state.user;
-    
-    const loadAmountOwned = async () => {
-        const response = await fetch(`/user_api/user/${user}/${title}`);
-        const userData = await response.json();
-        return userData.amountOwned;
-    }
-    
-    const onConfirm = async (total) => {
-        const owned = await loadAmountOwned();
-        if(userfunds >= total){
-            
-            navigate("/purchase-confirmation", {state: {title, total, userfunds, user, owned, quantity}});
-    }};
+    return (
+    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
+        <header className="flex justify-between items-center px-6 py-4 bg-white shadow-sm">
+            <h1>MarketLab</h1>
+            <nav className="space-x-6">
+                <button>Portfolio</button>
+                <button>Dashboard</button>
+            </nav>
+            <h1>Cash: {mockPortfolio.cash}</h1>
+        </header>
 
-    return(
-        <div>
-            <header>
-                <p className="stock-data">Your funds: ${userfunds}</p>
-            </header>
-            <h1 className="title1">{title} Purchase</h1>
-            <table className="purchase-table-size">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td className="stock-data">{sym}</td>
-                        <td className="stock-data">${price}</td>
-                        <td><input 
-                                type="text" 
-                                id="stockQuantity" 
-                                value={quantity}
-                                placeholder="Amount to Purchase"
-                                className="stock-data"
-                                onChange={e => {if(/^\d*$/.test(e.target.value)){
-                                    setQuantity(e.target.value);
-                                }}}/>
-                            </td>
-                    </tr>
-                </tbody>
-            </table>
+        <main className="flex-grow px-6 py-10 max-w-5xl mx-auto">
+            <h1 className="text-2xl font-bold mb-4 text-center">Buy stock</h1>
+            <section className="text-center mb-10">
+                <label className="block text-sm font-medium mb-1">Purchase Details:</label>
+                <input placeholder="Company Name or Ticker Symbol"/>
+            </section>
 
-            <h2 className="title2">{total === 0 ? "Total Purchase Amount": `$${total.toFixed(2)}`}</h2>
-            <button onClick={ () => onConfirm(total)}>Confirm Purchase</button>
-        </div>
-    );
+        </main>
+
+    <footer className="text-center py-6 text-gray-500 border-t">
+        © 2025 MarketLab
+    </footer>
+    </div>
+
+
+);
 }
 
 export default BuyStockPage;

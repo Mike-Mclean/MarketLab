@@ -75,9 +75,8 @@ function HomePage() {
 
     const logout_user = async(e) => {
         e.preventDefault();
-        console.log("Logging Out")
         try{
-            const response = await fetch("http://localhost:3075/logout", {
+            const response = await fetch("/logout", {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -100,17 +99,22 @@ function HomePage() {
             {/* Navbar */}
             <header className="flex justify-between items-center px-6 py-4 bg-white shadow-sm">
                 <h1 className="text-2xl font-bold text-indigo-600">MarketLab</h1>
-                <nav className="space-x-6">
-                    <button className="text-gray-700 hover:text-indigo-600">Home</button>
-                    <button className="text-gray-700 hover:text-indigo-600">Dashboard</button>
-                    <button className="text-gray-700 hover:text-indigo-600">Trade</button>
-                </nav>
+
+                {auth?.accessToken ? (
+                    <nav className="space-x-6">
+                        <button className="text-gray-700 hover:text-indigo-600">Portfolio</button>
+                        <button
+                            className="text-gray-700 hover:text-indigo-600"
+                            onClick={() => navigate("/buy")}>
+                                Trade
+                        </button>
+                    </nav>
+                    ) : (<div></div>)}
                 <div>
                     {auth?.accessToken ? (
                         <button
                         onClick={(e) => logout_user(e)}
-                        className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg"
-                        >
+                        className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg">
                         Logout
                         </button>
                     ) : (
