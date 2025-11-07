@@ -6,6 +6,7 @@ const AV_KEY = process.env.AV_KEY
 
 function HomePage() {
     const navigate = useNavigate();
+    const [ errMsg, setErrMsg] = useState('');
     const {auth ,setAuth} = useContext(AuthContext);
     const [snapshotStockData, setSnapshotStockData] = useState([
         { symbol: "AAPL", price: 0, change: 0 },
@@ -72,6 +73,28 @@ function HomePage() {
         updateStocks();
     }, []);
 
+    const logout_user = async(e) => {
+        e.preventDefault();
+        console.log("Logging Out")
+        try{
+            const response = await fetch("http://localhost:3075/logout", {
+                method: 'GET',
+                credentials: 'include'
+            });
+            if(!response.ok) {
+                throw new Error("Logout Failed");
+            }
+            setAuth({});
+
+        } catch (err) {
+            if (!err?.resposne) {
+                setErrMsg('No server response')
+            } else {
+                setErrMsg('Logout Failed')
+            }
+        }
+    };
+
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
             {/* Navbar */}
@@ -85,7 +108,7 @@ function HomePage() {
                 <div>
                     {auth?.accessToken ? (
                         <button
-                        onClick={() => setAuth({})}
+                        onClick={(e) => logout_user(e)}
                         className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg"
                         >
                         Logout

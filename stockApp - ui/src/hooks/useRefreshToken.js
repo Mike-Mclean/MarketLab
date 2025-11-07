@@ -7,14 +7,14 @@ const useRefreshToken = () => {
 
     const refresh = async () => {
         try{
-            const response = await fetch('/refresh', {
+            const response = await fetch("/refresh", {
                 method: "GET",
                 credentials: "include",
                 headers: {"Content-Type": "application/json"}
             });
 
             if (!response.ok) throw new Error("Failed to refresh token");
-            
+
             const data = await response.json()
 
             if(!response.ok) throw new Error("failed to refresh token")

@@ -26,8 +26,7 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: allowedOrigins,
-  credentials: true,
-  optionsSuccessStatus: 200,
+  credentials: true
 };
 
 app.use(cors(corsOptions));

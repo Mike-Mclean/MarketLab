@@ -5,8 +5,8 @@ import 'dotenv/config';
 
 const getCookieOptions = () => ({
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'Lax' : 'None',
+    secure: true,
+    sameSite: "None",
     maxAge: 24 * 60 * 60 * 1000
 });
 
@@ -45,7 +45,6 @@ const handleLogin = async (req, res) => {
 
     const match = await bcrypt.compare(pwd, foundUser.pwd)
     if (match) {
-        // create JWTs
         const accessToken = jwt.sign(
             {"username": foundUser.user},
             process.env.ACCESS_TOKEN_SECRET,
@@ -105,7 +104,7 @@ const handleLogout = async (req, res) => {
     );
 
     res.clearCookie('jwt', getCookieOptions());
-    res.sendStatus(204)
+    res.sendStatus(204);
 }
 
 export {handleNewUser, handleLogin, handleRefreshToken, handleLogout}
