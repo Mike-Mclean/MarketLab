@@ -1,6 +1,6 @@
 # MarketLab
 
-MarketLab is a full-stack stock trading simulation app. It allows users to register, log in, manage virtual funds, buy and sell stocks, and view trading history—all through a modern web interface.
+MarketLab is a full-stack stock trading simulation app. It allows users to register, log in, manage virtual funds, buy and sell stocks, and view trading history through a React frontend and Node.js/Express backends.
 
 ## Features
 - User registration and login
@@ -9,9 +9,6 @@ MarketLab is a full-stack stock trading simulation app. It allows users to regis
 - Trading history and order management
 - Responsive UI built with React
 - RESTful backend APIs (Node.js/Express)
-# MarketLab
-
-MarketLab is a full-stack stock trading simulation app. It allows users to register, log in, manage virtual funds, buy and sell stocks, and view trading history through a React frontend and Node.js/Express backends.
 
 This README provides developer-friendly instructions for running the app in development and production, environment variables you need, and troubleshooting tips for cookies/CORS/proxy behavior.
 
