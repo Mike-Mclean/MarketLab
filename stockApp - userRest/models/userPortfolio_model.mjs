@@ -1,19 +1,16 @@
 import mongoose from 'mongoose';
 
-//User Schema
-const userStockSchema = mongoose.Schema({
+const userPortfolioSchema = mongoose.Schema({
     userName: {type: String, requried: true},
-    stock_title: {type: String, requried: true},
-    stock_sym: {type: String, requried: true},
-    amountOwned: {type: Number, required: true}},
-    {collection: 'User Portfolio', versionKey: false
+    cash: {type: Number, required: true, default: 0},
+    stocks_owned: {type: Array},
 });
 
-const UserStock = mongoose.model("UserStock", userStockSchema);
+const UserPortfolio = mongoose.model("User Portfolio", userPortfolioSchema);
 
 
-const createUserStock = async (userName, stock_title, stock_sym, amountOwned) => {
-    const userStock = new UserStock({userName: userName,
+const createUserPortfolio = async (userName, stock_title, stock_sym, amountOwned) => {
+    const userPortfolio = new UserStock({userName: userName,
                                     stock_title: stock_title,
                                     stock_sym: stock_sym,
                                     amountOwned: amountOwned});

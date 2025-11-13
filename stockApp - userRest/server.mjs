@@ -8,7 +8,6 @@ import userRegisterRouter from './controllers/register_controller.mjs';
 import loginRouter from './controllers/login_controller.mjs';
 import refreshTokenRouter from './controllers/refreshToken_controller.mjs';
 import logoutRouter from './controllers/logout_controller.mjs'
-import db from './db.js'
 import verifyJWT from './services/verifyJWT.mjs';
 import cookieParser from 'cookie-parser';
 import path from 'path';

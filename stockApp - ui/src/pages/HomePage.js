@@ -105,7 +105,7 @@ function HomePage() {
                         <button className="text-gray-700 hover:text-indigo-600">Portfolio</button>
                         <button
                             className="text-gray-700 hover:text-indigo-600"
-                            onClick={() => navigate("/buy")}>
+                            onClick={() => navigate("/trade")}>
                                 Trade
                         </button>
                     </nav>

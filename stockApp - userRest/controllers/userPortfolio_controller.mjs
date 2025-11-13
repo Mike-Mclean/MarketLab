@@ -4,16 +4,18 @@ import { checkSchema, validationResult } from 'express-validator';
 
 const router = express.Router();
 
-router.post('/purchase', checkSchema({
-    userName: {notEmpty: true, isLength: {options: {min: 1}}, isString: true},
-    stock_title: {notEmpty: true, isLength: {options: {min: 1}}, isString: true},
-    stock_sym: {notEmpty: true, isLength: {options: {min: 1}}, isString: true},
-    amountOwned: {notEmpty: true, isFloat: true, isFloat: {options: {gt: 0}}}
+router.post('/trade', checkSchema({
+    tradeType: {notEmpty: true, isString: true},
+    userName: {notEmpty: true, isString: true},
+    stock_title: {notEmpty: true, isString: true},
+    stock_sym: {notEmpty: true, isString: true},
+    amount: {notEmpty: true, isFloat: true, isFloat: {options: {gt: 0}}}
     }),
     (req, res) => {
         const result = validationResult(req);
+        const {tradeType, userName, stock_title, stock_sym, amount} = req.body;
         if (result.isEmpty()){
-            userInfo.createUserStock(req.body.userName, req.body.stock_title, req.body.stock_sym, req.body.amountOwned)
+            userInfo.createUserStock()
             .then(info => {
                 res.status(201).json(info);
             })
