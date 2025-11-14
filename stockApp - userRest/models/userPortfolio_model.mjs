@@ -1,43 +1,76 @@
 import mongoose from 'mongoose';
+import { User } from './registerLogin_model.mjs';
 
 const userPortfolioSchema = mongoose.Schema({
     userName: {type: String, requried: true},
     cash: {type: Number, required: true, default: 0},
-    stocks_owned: {type: Array},
+    stocks_owned: [
+        {
+            stock_symbol: {type: String, required: true},
+            quantity: {type: Number, required: true}
+        }
+    ]
 });
 
 const UserPortfolio = mongoose.model("User Portfolio", userPortfolioSchema);
 
 
-const createUserPortfolio = async (userName, stock_title, stock_sym, amountOwned) => {
-    const userPortfolio = new UserStock({userName: userName,
-                                    stock_title: stock_title,
-                                    stock_sym: stock_sym,
-                                    amountOwned: amountOwned});
-    return userStock.save();
+const createUserPortfolio = (userName) => {
+    const userPortfolio = new UserPortfolio({userName: userName});
+    return userPortfolio.save();
 }
 
-const findAllUserStocks = async (userName) => {
-    const query = UserStock.find({userName: userName});
-    return query.exec();
+const findUserStocks = async (userName) => {
+    const user = await UserPortfolio.findOne({userName: userName});
+    return user.stocks_owned;
 }
 
-const findUserStockByUserName = async (userName, stock_title) => {
-    const query = UserStock.findOne({userName: userName, stock_title: stock_title});
-    return query.exec();
-}
-
-const replaceUserStock = async (userName, stock_title, amountOwned) =>{
-    const result = await UserStock.replaceOne(
-        {userName: userName, stock_title: stock_title},
-        {userName: userName, stock_title: stock_title, amountOwned: amountOwned}
+const updateUserStocks = async (refToken, stock_symbol, tradeQuantity) => {
+    const foundUser = await User.findOne({refToken: refToken});
+    const userName = foundUser.user;
+    let update = await UserPortfolio.findOneAndUpdate(
+        {
+            userName,
+            'stocks_owned.stock_symbol': stock_symbol
+        },
+        {
+            $inc: { "stocks_owned.$.quantity": tradeQuantity}
+        },
+        {new: true}
     );
-    return result.modifiedCount;
+
+    const stock = update.stocks_owned.find(
+        (s) => s.stock_symbol === stock_symbol
+    );
+
+    if (stock && stock.quantity === 0){
+        update = await UserPortfolio.findOneAndUpdate(
+        {
+            userName
+        },
+        {
+            $pull: { stocks_owned: {stock_symbol}}
+        },
+        {new: true}
+        )
+    }
+    //if user doesn't own any of this stock
+    if (!update) {
+        update = await UserPortfolio.findOneAndUpdate(
+        {refToken},
+        {$push:
+            {stocks_owned:
+                {
+                    stock_symbol,
+                    quantity: tradeQuantity
+                }
+            }
+        },
+        {new: true}
+    );
+    }
+    return update
 }
 
-const deleteById = async (userName, stock) => {
-    const result = await UserStock.deleteOne({userName: userName, stock: stock});
-    return result.deletedCount;
-}
 
-export {createUserStock, findUserStockByUserName, replaceUserStock, deleteById, findAllUserStocks};
+export {createUserPortfolio, findUserStocks, updateUserStocks}

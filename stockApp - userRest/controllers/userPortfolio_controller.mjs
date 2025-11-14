@@ -5,17 +5,19 @@ import { checkSchema, validationResult } from 'express-validator';
 const router = express.Router();
 
 router.post('/trade', checkSchema({
-    tradeType: {notEmpty: true, isString: true},
-    userName: {notEmpty: true, isString: true},
-    stock_title: {notEmpty: true, isString: true},
     stock_sym: {notEmpty: true, isString: true},
     amount: {notEmpty: true, isFloat: true, isFloat: {options: {gt: 0}}}
     }),
-    (req, res) => {
+    async (req, res) => {
         const result = validationResult(req);
-        const {tradeType, userName, stock_title, stock_sym, amount} = req.body;
+        const {stock_sym, amount} = req.body;
+
+        const cookies = req.cookies;
+        if (!cookies?.jwt) return res.sendStatus(401);
+        const refreshToken = cookies.jwt;
+
         if (result.isEmpty()){
-            userInfo.createUserStock()
+            userInfo.updateUserStocks(refreshToken, stock_sym, amount)
             .then(info => {
                 res.status(201).json(info);
             })

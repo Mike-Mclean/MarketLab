@@ -167,11 +167,6 @@ function HomePage() {
                             </p>
                         </div>
                     </div>
-                    <div className="mt-6 text-center">
-                        <button className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition">
-                            Make a Trade
-                        </button>
-                    </div>
                 </section>
                 )}
 

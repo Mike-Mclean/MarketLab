@@ -13,6 +13,7 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
+import db from './db.js';
 
 const PORT = process.env.PORT || 3075;
 const app = express();

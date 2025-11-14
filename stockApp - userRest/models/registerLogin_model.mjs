@@ -107,4 +107,4 @@ const handleLogout = async (req, res) => {
     res.sendStatus(204);
 }
 
-export {handleNewUser, handleLogin, handleRefreshToken, handleLogout}
+export {handleNewUser, handleLogin, handleRefreshToken, handleLogout, User}
