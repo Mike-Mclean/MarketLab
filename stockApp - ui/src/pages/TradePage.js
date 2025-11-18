@@ -1,22 +1,40 @@
 import { useNavigate} from 'react-router-dom';
-import { useState} from 'react';
+import { useState, useEffect} from 'react';
+import debounce from 'lodash.debounce'
 import '../App.css';
 
+const FH_KEY = process.env.FH_KEY
+
 const TradePage = () => {
-    const [symbol, setSymbol] = useState("")
-    const [price, setPrice] = useState()
-    const [shares, setShares] = useState(0)
-    const [tradeType, setTradeType]= useState("Buy")
+    const [symbol, setSymbol] = useState("");
+    const [searchInput, setSearchInput] = useState("");
+    const [price, setPrice] = useState();
+    const [shares, setShares] = useState(0);
+    const [tradeType, setTradeType]= useState("Buy");
+    const [userPortfolio, setUserPortfolio] = useState(null);
+    const navigate = useNavigate();
+    const user = auth.user;
 
-    const mockSymbols = {
-        "Apple": "AAPL",
+    useEffect(async () => {
+        userData = await fetch(`/portfolio/user/${user}`, {
+            method: "GET",
+            headers: {"Content-Type": "application/json"},
+            credentials: "include"
+        });
+        const portfolio = await userData.json();
+        setUserPortfolio(portfolio);
+    }, []);
+
+    const debounceSearch = debounce(async (query) => {
+        const response = await fetch(`https://finnhub.io/api/v1/search?q=${query}&exchange=US&token=${FH_KEY}`);
+        const data = await response.json();
+        const [{description, displaySymbol}] = data["results"];
+    }, 500);
+
+    const handleSearchChange = (e) => {
+        setSearchInput(e.target.value);
+        debounceSearch(e.target.value);
     }
-
-    const mockPortfolio = {
-        value: 10250.75,
-        cash: 750.25,
-        dailyChange: 1.24
-    };
 
     const handleTrade = async () => {
         const cost = price * shares
@@ -25,15 +43,13 @@ const TradePage = () => {
             return;
         }
 
-        await fetch("/trade", {
+        await fetch("/portfolio/trade", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             credentials: "include",
             body: JSON.stringify({symbol, shares})
         })
     }
-
-    const navigate = useNavigate();
 
     return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
@@ -45,7 +61,7 @@ const TradePage = () => {
                 <button>Portfolio</button>
                 <button>Dashboard</button>
             </nav>
-            <h1 className='font-semibold'>Cash: {mockPortfolio.cash}</h1>
+            <h1 className='font-semibold'>Cash: {userPortfolio.cash}</h1>
         </header>
 
         <main className="flex-grow px-6 py-10 max-w-4xl mx-auto">
@@ -78,8 +94,8 @@ const TradePage = () => {
                     <input
                     type = 'text'
                     placeholder="Company Name or Ticker Symbol"
-                    value = {symbol}
-                    onChange = {(e) => setSymbol(e.target.value)}
+                    value = {searchInput}
+                    onChange = {handleSearchChange}
                     className='border rounded-lg px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none'/>
                     <ul class="search-result"></ul>
 

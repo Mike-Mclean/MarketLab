@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    setAuth({accessToken: data.accessToken});
+                    setAuth({username: data.user, accessToken: data.accessToken});
                 }
             } catch (err){
                 console.error("Auto-refresh failed", err)

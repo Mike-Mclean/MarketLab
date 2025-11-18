@@ -20,9 +20,9 @@ const createUserPortfolio = (userName) => {
     return userPortfolio.save();
 }
 
-const findUserStocks = async (userName) => {
+const findUserPortfolio = async (userName) => {
     const user = await UserPortfolio.findOne({userName: userName});
-    return user.stocks_owned;
+    return user;
 }
 
 const updateUserStocks = async (refToken, stock_symbol, tradeQuantity) => {
@@ -73,4 +73,4 @@ const updateUserStocks = async (refToken, stock_symbol, tradeQuantity) => {
 }
 
 
-export {createUserPortfolio, findUserStocks, updateUserStocks}
+export {createUserPortfolio, findUserPortfolio, updateUserStocks}
