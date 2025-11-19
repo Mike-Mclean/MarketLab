@@ -25,7 +25,8 @@ export const AuthProvider = ({ children }) => {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    setAuth({username: data.user, accessToken: data.accessToken});
+                    // standardize auth shape to { user, accessToken }
+                    setAuth({user: data.user, accessToken: data.accessToken});
                 }
             } catch (err){
                 console.error("Auto-refresh failed", err)

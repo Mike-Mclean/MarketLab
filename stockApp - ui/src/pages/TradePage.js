@@ -1,7 +1,9 @@
 import { useNavigate} from 'react-router-dom';
-import { useState, useEffect} from 'react';
+import { useState, useEffect, useContext} from 'react';
 import debounce from 'lodash.debounce'
+import AuthContext from "../context/AuthProvider";
 import '../App.css';
+import usePrivateFetch from '../hooks/usePrivateFetch';
 
 const FH_KEY = process.env.FH_KEY
 
@@ -13,17 +15,38 @@ const TradePage = () => {
     const [tradeType, setTradeType]= useState("Buy");
     const [userPortfolio, setUserPortfolio] = useState(null);
     const navigate = useNavigate();
-    const user = auth.user;
+    const { auth } = useContext(AuthContext);
+    const user = auth?.user;
 
-    useEffect(async () => {
-        userData = await fetch(`/portfolio/user/${user}`, {
-            method: "GET",
-            headers: {"Content-Type": "application/json"},
-            credentials: "include"
-        });
-        const portfolio = await userData.json();
-        setUserPortfolio(portfolio);
+    const privateFetch = usePrivateFetch();
+
+    useEffect(() => {
+        const fetchPortfolio = async () => {
+            if (!auth?.accessToken || !user) return;
+
+            try{
+                const userData = await privateFetch(`/portfolio/user/${user}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${auth.accessToken}`
+                    },
+                    credentials: "include"
+                });
+                if (!userData.ok){
+                    console.error('Failed to fetch portfolio', userData.status);
+                    return;
+                }
+                const portfolio = await userData.json();
+                setUserPortfolio(portfolio);
+            } catch (err) {
+                console.error('Error fetching portfolio', err);
+            }
+        };
+
+        fetchPortfolio();
     }, []);
+
 
     const debounceSearch = debounce(async (query) => {
         const response = await fetch(`https://finnhub.io/api/v1/search?q=${query}&exchange=US&token=${FH_KEY}`);
@@ -38,17 +61,25 @@ const TradePage = () => {
 
     const handleTrade = async () => {
         const cost = price * shares
-        if (tradeType === "Sell" && cost > mockPortfolio.cash) {
+        if (tradeType === "Sell" && cost > (userPortfolio?.cash ?? 0)) {
             alert ("Insufficent Funds");
             return;
         }
 
-        await fetch("/portfolio/trade", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            credentials: "include",
-            body: JSON.stringify({symbol, shares})
-        })
+        try{
+            const res = await privateFetch("/portfolio/trade", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                credentials: "include",
+                body: JSON.stringify({user, symbol, shares})
+            });
+
+            if (!res.ok){
+                console.error('Trade request failed', res.status);
+            }
+        } catch (err) {
+            console.error("Trade failed", err)
+        }
     }
 
     return (
@@ -61,7 +92,7 @@ const TradePage = () => {
                 <button>Portfolio</button>
                 <button>Dashboard</button>
             </nav>
-            <h1 className='font-semibold'>Cash: {userPortfolio.cash}</h1>
+            <h1 className='font-semibold'>Cash: {userPortfolio?.cash ?? "----"}</h1>
         </header>
 
         <main className="flex-grow px-6 py-10 max-w-4xl mx-auto">
@@ -97,7 +128,7 @@ const TradePage = () => {
                     value = {searchInput}
                     onChange = {handleSearchChange}
                     className='border rounded-lg px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none'/>
-                    <ul class="search-result"></ul>
+                    <ul className="search-result"></ul>
 
                     <label className="block text-sm font-medium mb-1">{tradeType} Quantity</label>
                     <input

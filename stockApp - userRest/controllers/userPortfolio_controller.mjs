@@ -10,14 +10,10 @@ router.post('/trade', checkSchema({
     }),
     async (req, res) => {
         const result = validationResult(req);
-        const {stock_sym, amount} = req.body;
-
-        const cookies = req.cookies;
-        if (!cookies?.jwt) return res.sendStatus(401);
-        const refreshToken = cookies.jwt;
+        const {userName, stock_sym, amount} = req.body;
 
         if (result.isEmpty()){
-            userInfo.updateUserStocks(refreshToken, stock_sym, amount)
+            userInfo.updateUserStocks(userName, stock_sym, amount)
             .then(info => {
                 res.status(201).json(info);
             })
@@ -33,7 +29,7 @@ router.post('/trade', checkSchema({
 
 router.get('/user/:userName', (req, res) => {
     const user = req.params.userName;
-    userInfo.findAllUserStocks(user)
+    userInfo.findUserPortfolio(user)
     .then(userInfo => {
         res.json(userInfo);
     })

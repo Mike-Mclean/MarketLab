@@ -1,30 +1,34 @@
 import useRefreshToken from "./useRefreshToken";
 import { useContext } from "react";
-import { AuthContext } from "../context/AuthProvider";
+import AuthContext from "../context/AuthProvider";
 
 const usePrivateFetch = () => {
     const refresh = useRefreshToken();
     const { auth } = useContext(AuthContext);
 
     const privateFetch = async (url, options = {}) => {
+        const headers = {
+            "Content-Type": "application/json",
+            ...(options.header || {}),
+            Authorization: `Bearer ${auth?.accessToken}`
+        };
+
         const response = await fetch(url, {
             ...options,
-            headers: {
-                ...options.headers,
-                Authorization: `Bearer ${auth?.accessToken}`
-            },
+            headers,
             credentials: "include"
         });
 
         if (response.status === 401) {
             const newToken = await refresh();
             if (!newToken) throw new Error("Session expired");
+            const retryHeaders = {
+                ...headers,
+                Authorization: `Bearer ${newToken}`
+            }
             return fetch(url, {
                 ...options,
-                headers: {
-                    ...options.headers,
-                    Authorization: `Bearer ${newToken}`
-                },
+                headers: retryHeaders,
                 credentials:"include"
             });
         }

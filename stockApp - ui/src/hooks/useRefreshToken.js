@@ -1,6 +1,6 @@
 import useAuth from "./useAuth";
 import { useContext } from "react";
-import { AuthContext } from "../context/AuthProvider";
+import AuthContext from "../context/AuthProvider";
 
 const useRefreshToken = () => {
     const {setAuth} = useContext(AuthContext);

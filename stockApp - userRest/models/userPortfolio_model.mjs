@@ -25,9 +25,8 @@ const findUserPortfolio = async (userName) => {
     return user;
 }
 
-const updateUserStocks = async (refToken, stock_symbol, tradeQuantity) => {
-    const foundUser = await User.findOne({refToken: refToken});
-    const userName = foundUser.user;
+const updateUserStocks = async (userName, stock_symbol, tradeQuantity) => {
+
     let update = await UserPortfolio.findOneAndUpdate(
         {
             userName,
@@ -57,7 +56,7 @@ const updateUserStocks = async (refToken, stock_symbol, tradeQuantity) => {
     //if user doesn't own any of this stock
     if (!update) {
         update = await UserPortfolio.findOneAndUpdate(
-        {refToken},
+        {userName},
         {$push:
             {stocks_owned:
                 {
