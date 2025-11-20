@@ -5,11 +5,12 @@ import AuthContext from "../context/AuthProvider";
 import '../App.css';
 import usePrivateFetch from '../hooks/usePrivateFetch';
 
-const FH_KEY = process.env.FH_KEY
+const FH_API_KEY = process.env.REACT_APP_FH_KEY;
 
-const TradePage = () => {
+function TradePage() {
     const [symbol, setSymbol] = useState("");
-    const [searchInput, setSearchInput] = useState("");
+    const [selection, setSelection] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
     const [price, setPrice] = useState();
     const [shares, setShares] = useState(0);
     const [tradeType, setTradeType]= useState("Buy");
@@ -49,14 +50,35 @@ const TradePage = () => {
 
 
     const debounceSearch = debounce(async (query) => {
-        const response = await fetch(`https://finnhub.io/api/v1/search?q=${query}&exchange=US&token=${FH_KEY}`);
-        const data = await response.json();
-        const [{description, displaySymbol}] = data["results"];
+
+        if (!query || query.trim().length < 2) {
+            setSearchResults([]);
+            return;
+        }
+        try {
+            const response = await fetch(`https://finnhub.io/api/v1/search?q=${encodeURIComponent(query)}&token=${FH_API_KEY}`);
+
+            if(!response.ok) {
+                console.error("Search failed:", response.status, response.statusText);
+                setSearchResults([]);
+                return;
+            }
+
+            const data = await response.json();
+            const queryResults = data.result.map(({description, displaySymbol}) => (
+                {description, displaySymbol})
+            );
+            console.log(queryResults);
+            setSearchResults(queryResults);
+        } catch (err) {
+            console.error("Error during search:", err)
+            setSearchResults([]);
+        }
     }, 500);
 
-    const handleSearchChange = (e) => {
-        setSearchInput(e.target.value);
-        debounceSearch(e.target.value);
+    const handleSelect = (stockDesc, stockSymbol) => {
+        setSelection(`${stockDesc} (${stockSymbol})`);
+        setSearchResults([]);
     }
 
     const handleTrade = async () => {
@@ -86,7 +108,7 @@ const TradePage = () => {
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
         <header className="flex justify-between items-center px-8 py-4 bg-white shadow-sm">
             <h1 className='text-2xl font-bold tracking-wide'>
-                MarketLab
+                <a href='/'>MarketLab</a>
             </h1>
             <nav className="space-x-6">
                 <button>Portfolio</button>
@@ -119,16 +141,36 @@ const TradePage = () => {
                     </h1>
 
                     <label className="block text-sm font-medium mb-1">
-                        Stock Symbol
+                        Search Stock
                     </label>
 
-                    <input
-                    type = 'text'
-                    placeholder="Company Name or Ticker Symbol"
-                    value = {searchInput}
-                    onChange = {handleSearchChange}
-                    className='border rounded-lg px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none'/>
-                    <ul className="search-result"></ul>
+                    <div className="relative">
+                        <input
+                        type = 'text'
+                        value = {selection}
+                        placeholder="Company Name or Ticker Symbol"
+                        onChange = {(e) => {
+                            setSelection(e.target.value);
+                            debounceSearch(e.target.value);
+                        }}
+                        className= {searchResults.length > 0 ? (
+                            'border rounded-md px-3 py-2 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none'):
+                            ('border rounded-md px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none')}
+                        />
+
+                        {searchResults.length > 0 && (
+                            <ul className="absolute left-0 right-0 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto z-50">
+                                {searchResults.map(({description, displaySymbol}, index) => (
+                                    <li key={index}
+                                    className='px-3 py-2 hover:bg-green-200 cursor-pointer'
+                                    onClick={() => handleSelect(description, displaySymbol)}>
+                                        {description} ({displaySymbol})
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+
+                    </div>
 
                     <label className="block text-sm font-medium mb-1">{tradeType} Quantity</label>
                     <input
