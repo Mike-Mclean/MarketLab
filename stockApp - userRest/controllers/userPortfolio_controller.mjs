@@ -5,15 +5,17 @@ import { checkSchema, validationResult } from 'express-validator';
 const router = express.Router();
 
 router.post('/trade', checkSchema({
+    userName: {notEmpty: true, isString: true},
     stock_sym: {notEmpty: true, isString: true},
-    amount: {notEmpty: true, isFloat: true, isFloat: {options: {gt: 0}}}
+    amount: {notEmpty: true, isFloat: true, isFloat: {options: {gt: 0}}},
+    price:{notEmpty: true, isFloat: true, isFloat: {options: {gt: 0}}}
     }),
     async (req, res) => {
         const result = validationResult(req);
-        const {userName, stock_sym, amount} = req.body;
+        const {userName, stock_sym, amount, price} = req.body;
 
         if (result.isEmpty()){
-            userInfo.updateUserStocks(userName, stock_sym, amount)
+            userInfo.updateUserStocks(userName, stock_sym, amount, price)
             .then(info => {
                 res.status(201).json(info);
             })

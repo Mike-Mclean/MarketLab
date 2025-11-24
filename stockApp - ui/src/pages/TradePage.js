@@ -12,7 +12,7 @@ function TradePage() {
     const [selection, setSelection] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [price, setPrice] = useState();
-    const [shares, setShares] = useState(0);
+    const [shares, setShares] = useState();
     const [tradeType, setTradeType]= useState("Buy");
     const [userPortfolio, setUserPortfolio] = useState(null);
     const navigate = useNavigate();
@@ -68,7 +68,6 @@ function TradePage() {
             const queryResults = data.result.map(({description, displaySymbol}) => (
                 {description, displaySymbol})
             );
-            console.log(queryResults);
             setSearchResults(queryResults);
         } catch (err) {
             console.error("Error during search:", err)
@@ -76,14 +75,24 @@ function TradePage() {
         }
     }, 500);
 
-    const handleSelect = (stockDesc, stockSymbol) => {
+    const handleSelect = async (stockDesc, stockSymbol) => {
         setSelection(`${stockDesc} (${stockSymbol})`);
         setSearchResults([]);
+        const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(stockSymbol)}&token=${encodeURIComponent(FH_API_KEY)}`);
+
+        if(!response.ok) {
+            console.error("Search failed:", response.status, response.statusText);
+            return;
+        }
+
+        const data = await response.json();
+        setPrice(data.c)
+
     }
 
     const handleTrade = async () => {
         const cost = price * shares
-        if (tradeType === "Sell" && cost > (userPortfolio?.cash ?? 0)) {
+        if (tradeType === "Buy" && cost > (userPortfolio?.cash ?? 0)) {
             alert ("Insufficent Funds");
             return;
         }
@@ -93,7 +102,7 @@ function TradePage() {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 credentials: "include",
-                body: JSON.stringify({user, symbol, shares})
+                body: JSON.stringify({user, symbol, shares, cost, tradeType})
             });
 
             if (!res.ok){
@@ -172,6 +181,15 @@ function TradePage() {
 
                     </div>
 
+                    {price && (
+                        <div>
+                            <label className="text-sm font-medium">Current Stock Price:</label>
+                            <p className='bg-white border rounded-lg px-4 py-3 shadow-sm text-center text-lg font-bold mb-4'>
+                                ${price.toFixed(2)}
+                            </p>
+                        </div>
+                    )}
+
                     <label className="block text-sm font-medium mb-1">{tradeType} Quantity</label>
                     <input
                     min="1"
@@ -181,11 +199,15 @@ function TradePage() {
                     onChange = {(e) => setShares(e.target.value)}
                     className='border rounded-lg px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none'/>
 
-                    {price && (
-                        <p className='text-gray-700 mb-6 text-center'>
-                            Current Price: ${price.toFixed(2)}
-                        </p>
+                    {shares && price && (
+                        <div>
+                            <label className="text-sm font-medium">Total Trade Price:</label>
+                            <p className='bg-white border rounded-lg px-4 py-3 shadow-sm text-center text-lg font-bold mb-4'>
+                                ${(price * shares).toFixed(2)}
+                            </p>
+                        </div>
                     )}
+
 
                     <button
                         onClick={handleTrade}
