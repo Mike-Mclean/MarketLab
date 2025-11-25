@@ -1,11 +1,10 @@
 import React from 'react';
-import StockList from '../components/StockList';
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../App.css'
 
 function ProfilePage({setTransactionStock}){
-    
+
     const [userStocks, setUserStocks] = useState([]);
     const {username} = useParams();
     const navigate = useNavigate();
@@ -20,7 +19,7 @@ function ProfilePage({setTransactionStock}){
         const stock_data = await response.json();
         setTransactionStock(stock_data);
     }
-    
+
     const loadFunds = async () => {
         const fundsResponse = await fetch(`/funds_api/funds/${username}`);
         const userFundsData = await fundsResponse.json();
@@ -64,11 +63,11 @@ function ProfilePage({setTransactionStock}){
                 <p className="stock-data">Your funds: ${userfunds}</p>
                 <button className='basic-buttons' onClick={() => navigate(`/history/${username}`)}>Trading History</button>
             </header>
-            <StockList 
-            stocks={userStocks} 
-            onBuy={onBuy} 
-            onSell={onSell} 
-            columns={profilepageColumns} 
+            <StockList
+            stocks={userStocks}
+            onBuy={onBuy}
+            onSell={onSell}
+            columns={profilepageColumns}
             placeOrder={placeOrder}
             ></StockList>
         </div>

@@ -4,6 +4,7 @@ import debounce from 'lodash.debounce'
 import AuthContext from "../context/AuthProvider";
 import '../App.css';
 import usePrivateFetch from '../hooks/usePrivateFetch';
+import Popup from 'reactjs-popup';
 
 const FH_API_KEY = process.env.REACT_APP_FH_KEY;
 
@@ -12,7 +13,7 @@ function TradePage() {
     const [selection, setSelection] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [price, setPrice] = useState();
-    const [shares, setShares] = useState();
+    const [shares, setShares] = useState(0);
     const [tradeType, setTradeType]= useState("Buy");
     const [userPortfolio, setUserPortfolio] = useState(null);
     const navigate = useNavigate();
@@ -78,6 +79,7 @@ function TradePage() {
     const handleSelect = async (stockDesc, stockSymbol) => {
         setSelection(`${stockDesc} (${stockSymbol})`);
         setSearchResults([]);
+        setSymbol(stockSymbol);
         const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(stockSymbol)}&token=${encodeURIComponent(FH_API_KEY)}`);
 
         if(!response.ok) {
@@ -100,9 +102,11 @@ function TradePage() {
         try{
             const res = await privateFetch("/portfolio/trade", {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${auth.accessToken}`},
                 credentials: "include",
-                body: JSON.stringify({user, symbol, shares, cost, tradeType})
+                body: JSON.stringify({userName: user, stock_sym: symbol, amount: shares, price: cost, tradeType: tradeType})
             });
 
             if (!res.ok){
@@ -123,7 +127,7 @@ function TradePage() {
                 <button>Portfolio</button>
                 <button>Dashboard</button>
             </nav>
-            <h1 className='font-semibold'>Cash: {userPortfolio?.cash ?? "----"}</h1>
+            <h1 className='font-semibold'>Cash: {userPortfolio?.cash.toFixed(2) ?? "----"}</h1>
         </header>
 
         <main className="flex-grow px-6 py-10 max-w-4xl mx-auto">
@@ -141,84 +145,99 @@ function TradePage() {
                 </select>
             </div>
 
+            <section className="mt-10 bg-white rounded-xl shadow p-8 max-w-lg mx-auto">
 
-            {tradeType && (
-                <section className="mt-10 bg-white rounded-xl shadow p-8 max-w-lg mx-auto">
+                <h1 className='text-2xl font-bold mb-4 text-center'>
+                    {tradeType} Stock
+                </h1>
 
-                    <h1 className='text-2xl font-bold mb-4 text-center'>
-                        {tradeType} Stock
-                    </h1>
+                <label className="block text-sm font-medium mb-1">
+                    Search Stock
+                </label>
 
-                    <label className="block text-sm font-medium mb-1">
-                        Search Stock
-                    </label>
-
-                    <div className="relative">
-                        <input
-                        type = 'text'
-                        value = {selection}
-                        placeholder="Company Name or Ticker Symbol"
-                        onChange = {(e) => {
-                            setSelection(e.target.value);
-                            debounceSearch(e.target.value);
-                        }}
-                        className= {searchResults.length > 0 ? (
-                            'border rounded-md px-3 py-2 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none'):
-                            ('border rounded-md px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none')}
-                        />
-
-                        {searchResults.length > 0 && (
-                            <ul className="absolute left-0 right-0 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto z-50">
-                                {searchResults.map(({description, displaySymbol}, index) => (
-                                    <li key={index}
-                                    className='px-3 py-2 hover:bg-green-200 cursor-pointer'
-                                    onClick={() => handleSelect(description, displaySymbol)}>
-                                        {description} ({displaySymbol})
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-
-                    </div>
-
-                    {price && (
-                        <div>
-                            <label className="text-sm font-medium">Current Stock Price:</label>
-                            <p className='bg-white border rounded-lg px-4 py-3 shadow-sm text-center text-lg font-bold mb-4'>
-                                ${price.toFixed(2)}
-                            </p>
-                        </div>
-                    )}
-
-                    <label className="block text-sm font-medium mb-1">{tradeType} Quantity</label>
+                <div className="relative">
                     <input
-                    min="1"
-                    type="number"
-                    placeholder="Enter the trade quantity"
-                    value = {shares}
-                    onChange = {(e) => setShares(e.target.value)}
-                    className='border rounded-lg px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none'/>
+                    type = 'text'
+                    value = {selection}
+                    placeholder="Company Name or Ticker Symbol"
+                    onChange = {(e) => {
+                        setSelection(e.target.value);
+                        debounceSearch(e.target.value);
+                    }}
+                    className= {searchResults.length > 0 ? (
+                        'border rounded-md px-3 py-2 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none'):
+                        ('border rounded-md px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none')}
+                    />
 
-                    {shares && price && (
-                        <div>
-                            <label className="text-sm font-medium">Total Trade Price:</label>
-                            <p className='bg-white border rounded-lg px-4 py-3 shadow-sm text-center text-lg font-bold mb-4'>
-                                ${(price * shares).toFixed(2)}
-                            </p>
-                        </div>
+                    {searchResults.length > 0 && (
+                        <ul className="absolute left-0 right-0 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto z-50">
+                            {searchResults.map(({description, displaySymbol}, index) => (
+                                <li key={index}
+                                className='px-3 py-2 hover:bg-green-200 cursor-pointer'
+                                onClick={() => handleSelect(description, displaySymbol)}>
+                                    {description} ({displaySymbol})
+                                </li>
+                            ))}
+                        </ul>
                     )}
 
+                </div>
 
-                    <button
-                        onClick={handleTrade}
-                        className={`w-full py-2 rounded-lg font-semibold shadow-md
-                            ${tradeType === 'Buy' ? "bg-green-400 hover:bg-green-500" : "bg-red-400 hover:bg-red-500"}`}
-                    >
-                        {tradeType}
-                    </button>
-
-                </section>
+                {price && (
+                    <div>
+                        <label className="text-sm font-medium">Current Stock Price:</label>
+                        <p className='bg-white border rounded-lg px-4 py-3 shadow-sm text-center text-lg font-bold mb-4'>
+                            ${price.toFixed(2)}
+                        </p>
+                    </div>
                 )}
+
+                <label className="block text-sm font-medium mb-1">{tradeType} Quantity</label>
+                <input
+                min="1"
+                type="number"
+                placeholder="Enter the trade quantity"
+                value = {shares}
+                onChange = {(e) => setShares(e.target.value)}
+                className='border rounded-lg px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none'/>
+
+                {shares !== 0 && price && (
+                    <div>
+                        <label className="text-sm font-medium">Total Trade Price:</label>
+                        <p className='bg-white border rounded-lg px-4 py-3 shadow-sm text-center text-lg font-bold mb-4'>
+                            ${(price * shares).toFixed(2)}
+                        </p>
+                    </div>
+                )}
+
+                <Popup trigger={
+                    <button
+                    className={`w-full py-2 rounded-lg font-semibold shadow-md
+                        ${tradeType === 'Buy' ? "bg-green-400 hover:bg-green-500" : "bg-red-400 hover:bg-red-500"}`}> {tradeType} </button>
+                } modal nested>
+                {
+                    close => (
+                        <div className="mt-10 bg-white rounded-xl shadow p-8 max-w-lg mx-auto">
+                            <h1 className='text-2xl font-bold mb-4 text-center'>
+                                Trade Confirmation
+                            </h1>
+                            <div>
+                                <button onClick={() => close()}
+                                className='px-2 py-2 rounded-lg font-semibold shadow-md bg-red-200 hover:bg-red-300'>
+                                    Cancel
+                                </button>
+                                <button onClick={handleTrade}
+                                className='px-2 py-2 rounded-lg font-semibold shadow-md bg-green-200 hover:bg-green-300'>
+                                    Confirm Trade
+                                </button>
+                            </div>
+                        </div>
+                    )
+                }
+
+                </Popup>
+
+            </section>
 
         </main>
 

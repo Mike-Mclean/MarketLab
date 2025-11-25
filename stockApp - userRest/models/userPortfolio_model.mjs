@@ -55,8 +55,9 @@ const updateUserStocks = async (userName, stock_symbol, tradeQuantity, price, tr
             'stocks_owned.stock_symbol': stock_symbol
         },
         {
-            $inc: { "stocks_owned.$.quantity": tradeQuantity},
-            $inc: { cash: -price}
+            $inc: { "stocks_owned.$.quantity": tradeQuantity,
+                cash: -price
+            }
         },
         {new: true});
 
