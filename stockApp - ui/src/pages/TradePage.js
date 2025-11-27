@@ -16,6 +16,8 @@ function TradePage() {
     const [shares, setShares] = useState(0);
     const [tradeType, setTradeType]= useState("Buy");
     const [userPortfolio, setUserPortfolio] = useState(null);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [successOpen, setSuccessOpen] = useState(false);
     const navigate = useNavigate();
     const { auth } = useContext(AuthContext);
     const user = auth?.user;
@@ -54,6 +56,8 @@ function TradePage() {
 
         if (!query || query.trim().length < 2) {
             setSearchResults([]);
+            setPrice();
+            setSymbol("");
             return;
         }
         try {
@@ -212,29 +216,79 @@ function TradePage() {
 
                 <Popup trigger={
                     <button
-                    className={`w-full py-2 rounded-lg font-semibold shadow-md
-                        ${tradeType === 'Buy' ? "bg-green-400 hover:bg-green-500" : "bg-red-400 hover:bg-red-500"}`}> {tradeType} </button>
-                } modal nested>
+                        className={`w-full py-2 rounded-lg font-semibold shadow-md
+                            ${tradeType === 'Buy' ?
+                                "bg-green-400 hover:bg-green-500 disabled:opacity-30 disabled:bg-green-200" : "bg-red-400 hover:bg-red-500 disabled:opacity-30 disabled:bg-red-200"
+                            }`}
+                        disabled={symbol && shares ? false : true}
+                    >
+                        {tradeType}
+                    </button>
+                }
+                modal
+                open={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                overlayStyle={{background: "rgba(0,0,0,0.5)"}}
+                >
                 {
                     close => (
                         <div className="mt-10 bg-white rounded-xl shadow p-8 max-w-lg mx-auto">
                             <h1 className='text-2xl font-bold mb-4 text-center'>
                                 Trade Confirmation
                             </h1>
-                            <div>
-                                <button onClick={() => close()}
-                                className='px-2 py-2 rounded-lg font-semibold shadow-md bg-red-200 hover:bg-red-300'>
+                            <p className="text-center text-xl mb-4">
+                                Do you want to {tradeType.toLowerCase()} {(price * shares).toFixed(2)} worth of {symbol}? You will have ${(userPortfolio?.cash - price * shares).toFixed(2)} in cash  remaining after the trade.
+                            </p>
+                            <div className='flex justify-center'>
+                                <button onClick={() => {
+                                    setConfirmOpen(false);
+                                    close();
+                                }}
+                                className='mr-3 px-2 py-2 rounded-lg font-semibold shadow-md bg-red-200 hover:bg-red-300'>
                                     Cancel
                                 </button>
-                                <button onClick={handleTrade}
-                                className='px-2 py-2 rounded-lg font-semibold shadow-md bg-green-200 hover:bg-green-300'>
+                                <button onClick={async () => {
+                                        await handleTrade();
+                                        setConfirmOpen(false);
+                                        setSuccessOpen(true);
+                                        close();
+                                    }}
+                                        className='ml-3 px-2 py-2 rounded-lg font-semibold shadow-md bg-green-200 hover:bg-green-300'
+                                >
                                     Confirm Trade
                                 </button>
                             </div>
                         </div>
                     )
                 }
+                </Popup>
 
+                <Popup
+                    open={successOpen}
+                    onClose={() => setSuccessOpen(false)}
+                    modal
+                    overlayStyle={{ background: "rgba(0,0,0,0.5)" }}
+                    closeOnDocumentClick={false}
+                >
+                    <div className='mt-10 bg-white rounded-xl shadow p-8 max-w-lg mx-auto'>
+                        <h1 className='text-2xl font-bold mb-4 text-center'>
+                            Trade Successful!
+                        </h1>
+                        <p className="text-center text-xl mb-4">
+                            Your trade for {symbol} has been completed.
+                        </p>
+                        <div className="flex justify-center">
+                        <button
+                            className='ml-3 px-2 py-2 rounded-lg font-semibold shadow-md bg-green-200 hover:bg-green-300'
+                            onClick={() => {
+                                setSuccessOpen(false);
+                                window.location.reload();
+                            }}
+                        >
+                            OK
+                        </button>
+                        </div>
+                    </div>
                 </Popup>
 
             </section>
