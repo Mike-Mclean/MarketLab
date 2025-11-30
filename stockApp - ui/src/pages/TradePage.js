@@ -10,6 +10,7 @@ const FH_API_KEY = process.env.REACT_APP_FH_KEY;
 
 function TradePage() {
     const [symbol, setSymbol] = useState("");
+    const [stockDesc, setStockDesc] = useState("");
     const [selection, setSelection] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [price, setPrice] = useState();
@@ -18,6 +19,7 @@ function TradePage() {
     const [userPortfolio, setUserPortfolio] = useState(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [successOpen, setSuccessOpen] = useState(false);
+
     const navigate = useNavigate();
     const { auth } = useContext(AuthContext);
     const user = auth?.user;
@@ -61,6 +63,7 @@ function TradePage() {
             return;
         }
         try {
+
             const response = await fetch(`https://finnhub.io/api/v1/search?q=${encodeURIComponent(query)}&token=${FH_API_KEY}`);
 
             if(!response.ok) {
@@ -74,6 +77,7 @@ function TradePage() {
                 {description, displaySymbol})
             );
             setSearchResults(queryResults);
+
         } catch (err) {
             console.error("Error during search:", err)
             setSearchResults([]);
@@ -84,6 +88,7 @@ function TradePage() {
         setSelection(`${stockDesc} (${stockSymbol})`);
         setSearchResults([]);
         setSymbol(stockSymbol);
+        setStockDesc(stockDesc);
         const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(stockSymbol)}&token=${encodeURIComponent(FH_API_KEY)}`);
 
         if(!response.ok) {
@@ -110,7 +115,7 @@ function TradePage() {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${auth.accessToken}`},
                 credentials: "include",
-                body: JSON.stringify({userName: user, stock_sym: symbol, amount: shares, price: cost, tradeType: tradeType})
+                body: JSON.stringify({userName: user, stock_desc: stockDesc, stock_sym: symbol, amount: shares, price: cost, tradeType: tradeType})
             });
 
             if (!res.ok){
@@ -155,37 +160,56 @@ function TradePage() {
                     {tradeType} Stock
                 </h1>
 
-                <label className="block text-sm font-medium mb-1">
-                    Search Stock
-                </label>
 
-                <div className="relative">
-                    <input
-                    type = 'text'
-                    value = {selection}
-                    placeholder="Company Name or Ticker Symbol"
-                    onChange = {(e) => {
-                        setSelection(e.target.value);
-                        debounceSearch(e.target.value);
-                    }}
-                    className= {searchResults.length > 0 ? (
-                        'border rounded-md px-3 py-2 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none'):
-                        ('border rounded-md px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none')}
-                    />
 
-                    {searchResults.length > 0 && (
-                        <ul className="absolute left-0 right-0 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto z-50">
-                            {searchResults.map(({description, displaySymbol}, index) => (
-                                <li key={index}
-                                className='px-3 py-2 hover:bg-green-200 cursor-pointer'
-                                onClick={() => handleSelect(description, displaySymbol)}>
-                                    {description} ({displaySymbol})
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+                {tradeType === "Buy" ? (
 
-                </div>
+                    <div className="relative">
+                        <label className="block text-sm font-medium mb-1">
+                            Search Stock
+                        </label>
+                        <input
+                        type = 'text'
+                        value = {selection}
+                        placeholder="Company Name or Ticker Symbol"
+                        onChange = {(e) => {
+                            setSelection(e.target.value);
+                            debounceSearch(e.target.value);
+                        }}
+                        className= {searchResults.length > 0 ? (
+                            'border rounded-md px-3 py-2 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none'):
+                            ('border rounded-md px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none')}
+                        />
+
+                        {searchResults.length > 0 && (
+                            <ul className="absolute left-0 right-0 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto z-50">
+                                {searchResults.map(({description, displaySymbol}, index) => (
+                                    <li key={index}
+                                    className='px-3 py-2 hover:bg-green-200 cursor-pointer'
+                                    onClick={() => handleSelect(description, displaySymbol)}>
+                                        {description} ({displaySymbol})
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+
+                    </div>
+                ) : (
+                    <div className="relative">
+                        <label className="block text-sm font-medium mb-1">
+                            Stock to Sell
+                        </label>
+                        <select
+                        className='border rounded-md px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none'
+                        defaultValue="placeholder"
+                        >
+                            <option value="placeholder" disabled hidden>Choose an asset from your portfolio</option>
+                            
+                        </select>
+                    </div>
+                )}
+
+
 
                 {price && (
                     <div>

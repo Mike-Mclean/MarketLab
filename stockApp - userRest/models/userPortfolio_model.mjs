@@ -6,6 +6,7 @@ const userPortfolioSchema = mongoose.Schema({
     cash: {type: Number, required: true, default: 0},
     stocks_owned: [
         {
+            stock_desc: {type: String, required: true},
             stock_symbol: {type: String, required: true},
             quantity: {type: Number, required: true}
         }
@@ -25,7 +26,7 @@ const findUserPortfolio = async (userName) => {
     return user;
 }
 
-const updateUserStocks = async (userName, stock_symbol, tradeQuantity, price, tradeType) => {
+const updateUserStocks = async (userName, stock_desc, stock_symbol, tradeQuantity, price, tradeType) => {
 
     const portfolio = await UserPortfolio.findOne({userName: userName});
 
@@ -41,6 +42,7 @@ const updateUserStocks = async (userName, stock_symbol, tradeQuantity, price, tr
         {$push:
             {stocks_owned:
                 {
+                    stock_desc,
                     stock_symbol,
                     quantity: tradeQuantity
                 }

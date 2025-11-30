@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.post('/trade', checkSchema({
     userName: {notEmpty: true, isString: true},
+    stock_desc: {notEmpty: true, isString: true},
     stock_sym: {notEmpty: true, isString: true},
     amount: {notEmpty: true, isFloat: true, isFloat: {options: {gt: 0}}},
     price: {notEmpty: true, isFloat: true, isFloat: {options: {gt: 0}}},
@@ -13,10 +14,10 @@ router.post('/trade', checkSchema({
     }),
     async (req, res) => {
         const result = validationResult(req);
-        const {userName, stock_sym, amount, price, tradeType} = req.body;
+        const {userName, stock_desc, stock_sym, amount, price, tradeType} = req.body;
 
         if (result.isEmpty()){
-            userInfo.updateUserStocks(userName, stock_sym, amount, price, tradeType)
+            userInfo.updateUserStocks(userName, stock_desc, stock_sym, amount, price, tradeType)
             .then(info => {
                 res.status(201).json(info);
             })
@@ -33,8 +34,8 @@ router.post('/trade', checkSchema({
 router.get('/user/:userName', (req, res) => {
     const user = req.params.userName;
     userInfo.findUserPortfolio(user)
-    .then(userInfo => {
-        res.json(userInfo);
+    .then(portfolio => {
+        res.json(portfolio);
     })
     .catch(error => {
         console.error(error);
