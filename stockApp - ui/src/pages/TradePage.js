@@ -5,6 +5,7 @@ import AuthContext from "../context/AuthProvider";
 import '../App.css';
 import usePrivateFetch from '../hooks/usePrivateFetch';
 import Popup from 'reactjs-popup';
+import { max } from 'lodash';
 
 const FH_API_KEY = process.env.REACT_APP_FH_KEY;
 
@@ -19,6 +20,7 @@ function TradePage() {
     const [userPortfolio, setUserPortfolio] = useState(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [successOpen, setSuccessOpen] = useState(false);
+    const [maxSell, setMaxSell] = useState(0);
 
     const navigate = useNavigate();
     const { auth } = useContext(AuthContext);
@@ -98,7 +100,6 @@ function TradePage() {
 
         const data = await response.json();
         setPrice(data.c)
-
     }
 
     const handleTrade = async () => {
@@ -126,6 +127,17 @@ function TradePage() {
         }
     }
 
+    function enforceMinMax(el) {
+        if (el.value != "") {
+            if (parseInt(el.value) < parseInt(el.min)) {
+            el.value = el.min;
+            }
+            if (parseInt(el.value) > parseInt(el.max)) {
+            el.value = el.max;
+            }
+        }
+    }
+
     return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
         <header className="flex justify-between items-center px-8 py-4 bg-white shadow-sm">
@@ -147,7 +159,15 @@ function TradePage() {
 
             <div className='flex justify-center'>
                 <select
-                onChange={(e) => setTradeType(e.target.value)}
+                onChange={(e) => {
+                    setTradeType(e.target.value);
+                    setPrice();
+                    setShares(0);
+                    setSymbol("");
+                    setStockDesc("");
+                    setSelection("");
+                    setMaxSell(0);
+                }}
                 className='text-center border rounded-lg px-3 py-2 mb-4 w-full max-w-xs bg-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none'>
                     <option value="Buy">Buy</option>
                     <option value="Sell">Sell</option>
@@ -160,10 +180,7 @@ function TradePage() {
                     {tradeType} Stock
                 </h1>
 
-
-
                 {tradeType === "Buy" ? (
-
                     <div className="relative">
                         <label className="block text-sm font-medium mb-1">
                             Search Stock
@@ -202,9 +219,23 @@ function TradePage() {
                         <select
                         className='border rounded-md px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none'
                         defaultValue="placeholder"
+                        onChange={(e) => {
+                            const selected = userPortfolio.stocks_owned[e.target.selectedIndex - 1];
+                            if (selected) {
+                                handleSelect(selected.stock_desc, selected.stock_symbol);
+                                setMaxSell(selected.quantity);
+                            }
+                        }}
                         >
                             <option value="placeholder" disabled hidden>Choose an asset from your portfolio</option>
-                            
+                            {userPortfolio.stocks_owned.map(({stock_desc, stock_symbol}, index) => (
+                                <option key={index}
+                                className='px-3 py-2 hover:bg-green-200 cursor-pointer'
+                                value={stock_symbol}>
+                                    {stock_desc} ({stock_symbol})
+                                </option>
+                            ))}
+
                         </select>
                     </div>
                 )}
@@ -220,14 +251,57 @@ function TradePage() {
                     </div>
                 )}
 
-                <label className="block text-sm font-medium mb-1">{tradeType} Quantity</label>
-                <input
-                min="1"
-                type="number"
-                placeholder="Enter the trade quantity"
-                value = {shares}
-                onChange = {(e) => setShares(e.target.value)}
-                className='border rounded-lg px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none'/>
+                {selection.length > 0 && tradeType === 'Sell' && (
+                    <div>
+                        <label className="text-sm font-medium">Current Number of Shares in your Portfolio</label>
+                        <p className='bg-white border rounded-lg px-4 py-3 shadow-sm text-center text-lg font-bold mb-4'>
+                            {maxSell}
+                        </p>
+                    </div>
+                )}
+
+                {tradeType === "Buy" ? (
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Buy Quantity</label>
+                        <input
+                        min="1"
+                        type="number"
+                        placeholder="Enter the trade quantity"
+                        value = {shares}
+                        onChange = {(e) => setShares(e.target.value)}
+                        className='border rounded-lg px-3 py-2 mb-4 w-full shadow-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none'/>
+                    </div>
+                ) : (
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Sell Quantity</label>
+                        <div className='flex gap-2'>
+                            <input
+                            min={1}
+                            max={maxSell}
+                            type="number"
+                            placeholder="Enter the trade quantity"
+                            value={shares}
+                            onChange = {(e) => {
+                                let val = Number(e.target.value);
+                                if (val < 1) val = 1;
+                                if (val > maxSell) val = maxSell;
+                                setShares(val);
+                            }}
+                            className='border rounded-lg px-3 py-2 w-full shadow-sm bg-gray-50
+                            focus:ring-2 focus:ring-blue-500 outline-none'/>
+
+                            <button
+                            className="px-3 py-2 bg-cyan-200 hover:bg-cyan-300
+                            rounded-lg border text-sm font-semibold"
+                            onClick={() => setShares(maxSell)}
+                            >
+                                Sell Max
+                            </button>
+                        </div>
+                    </div>
+
+                )}
+
 
                 {shares !== 0 && price && (
                     <div>
@@ -261,7 +335,7 @@ function TradePage() {
                                 Trade Confirmation
                             </h1>
                             <p className="text-center text-xl mb-4">
-                                Do you want to {tradeType.toLowerCase()} {(price * shares).toFixed(2)} worth of {symbol}? You will have ${(userPortfolio?.cash - price * shares).toFixed(2)} in cash  remaining after the trade.
+                                Do you want to {tradeType.toLowerCase()} ${(price * shares).toFixed(2)} worth of {symbol}? You will have ${tradeType === 'Buy' ? ((userPortfolio?.cash - price * shares).toFixed(2)) : ((userPortfolio?.cash + price * shares).toFixed(2))} in cash after the trade.
                             </p>
                             <div className='flex justify-center'>
                                 <button onClick={() => {
