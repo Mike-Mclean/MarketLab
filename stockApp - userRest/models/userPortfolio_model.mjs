@@ -63,21 +63,35 @@ const updateUserStocks = async (userName, stock_desc, stock_symbol, tradeQuantit
         },
         {new: true});
 
+    } else {
+        const updatedPortfolio = await UserPortfolio.findOneAndUpdate(
+        {
+            userName,
+            'stocks_owned.stock_symbol': stock_symbol
+        },
+        {
+            $inc: { "stocks_owned.$.quantity": -tradeQuantity,
+                cash: price
+            }
+        },
+        {new: true});
+
+        const updatedStock = updatedPortfolio.stocks_owned.find(
+            (s) => s.stock_symbol === stock_symbol
+        );
+
+        if (updatedStock && updatedStock.quantity === 0) {
+            await UserPortfolio.findOneAndUpdate(
+                { userName },
+                { $pull: { stocks_owned: { stock_symbol}}},
+                { new: true }
+            );
+        }
+
     }
 
-    // Keep for sell flow
-    // if (stock && stock.quantity === 0){
-    //     update = await UserPortfolio.findOneAndUpdate(
-    //     {
-    //         userName
-    //     },
-    //     {
-    //         $pull: { stocks_owned: {stock_symbol}}
-    //     },
-    //     {new: true}
-    //     )
-    // }
-    //if user doesn't own any of this stock
+
+
 }
 
 
