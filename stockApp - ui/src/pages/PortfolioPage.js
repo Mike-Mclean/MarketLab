@@ -127,11 +127,21 @@ function PortfolioPage(){
                             <tr
                             key={index}
                             className="bg-neutral-primary border-b border-default">
-                                <td className="px-6 py-4 text-left">{stock_desc} ({stock_symbol}) </td>
-                                <td className="px-6 py-4">{quantity}</td>
-                                <td className="px-6 py-4">{(stockPrices[index]?.currentPrice).toFixed(2)}</td>
-                                <td className="px-6 py-4">{(quantity * stockPrices[index]?.currentPrice).toFixed(2)}</td>
-                                <td className="px-6 py-4">{stockPrices[index]?.percentChange}</td>
+                                <td className="px-6 py-4 text-left">
+                                    {stock_desc} ({stock_symbol})
+                                </td>
+                                <td className="px-6 py-4">
+                                    {quantity}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {(stockPrices[index]?.currentPrice).toFixed(2)}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {(quantity * stockPrices[index]?.currentPrice).toFixed(2)}
+                                </td>
+                                <td className= {stockPrices[index]?.percentChange >= 0 ? ("px-6 py-4 text-green-600 font-bold") : ("px-6 py-4 text-red-600 font-bold")}>
+                                    {(stockPrices[index]?.percentChange).toFixed(2)}
+                                </td>
                             </tr>
                         ))}
                     </tbody>
