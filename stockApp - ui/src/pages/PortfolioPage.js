@@ -74,25 +74,39 @@ function PortfolioPage(){
                 <h1 className="block text-lg font-medium mb-1">
                     Current Portfolio Holdings
                 </h1>
-                <table>
-                    <tr>
-                        <th>Security Name (Symbol)</th>
-                        <th>Shares in Portfolio</th>
-                        <th>Current Share Price</th>
-                        <th>Total Amount in Portfolio</th>
-                        <th>24 Hour Change</th>
-                    </tr>
-
-                    {userPortfolio?.stocks_owned.map(({stock_desc, stock_symbol, quantity}, index) => (
-                        <tr
-                        key={index}>
-                            <td>{stock_desc} ({stock_symbol}) </td>
-                            <td>{quantity}</td>
-                            <td>*Get Share Price*</td>
-                            <td>*Share Price * Quantity*</td>
-                            <td>*Get 24 Hour Change*</td>
+                <table className="w-full text-sm text-center">
+                    <thead className="bg-neutral-secondary-soft border-b rounded-base">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 font-medium text-left">
+                                Security Name (Symbol)
+                            </th>
+                            <th scope="col" class="px-6 py-3 font-medium">
+                                Shares in Portfolio
+                            </th>
+                            <th scope="col" class="px-6 py-3 font-medium">
+                                Current Share Price
+                            </th>
+                            <th scope="col" class="px-6 py-3 font-medium">
+                                Total Amount in Portfolio
+                            </th>
+                            <th scope="col" class="px-6 py-3 font-medium">
+                                24 Hour Change
+                            </th>
                         </tr>
-                    ))}
+                    </thead>
+                    <tbody>
+                        {userPortfolio?.stocks_owned.map(({stock_desc, stock_symbol, quantity}, index) => (
+                            <tr
+                            key={index}
+                            className="bg-neutral-primary border-b border-default">
+                                <td className="px-6 py-4 text-left">{stock_desc} ({stock_symbol}) </td>
+                                <td className="px-6 py-4">{quantity}</td>
+                                <td className="px-6 py-4">*Get Share Price*</td>
+                                <td className="px-6 py-4">*Share Price * Quantity*</td>
+                                <td className="px-6 py-4">*Get 24 Hour Change*</td>
+                            </tr>
+                        ))}
+                    </tbody>
                 </table>
             </div>
 
