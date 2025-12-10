@@ -3,8 +3,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import AuthContext from '../context/AuthProvider';
 import usePrivateFetch from '../hooks/usePrivateFetch';
 
+const FH_API_KEY = process.env.REACT_APP_FH_KEY;
+
 function PortfolioPage(){
     const [userPortfolio, setUserPortfolio] = useState(null);
+    const [stockPrices, setStockPrices] = useState([]);
     const navigate = useNavigate();
     const { auth } = useContext(AuthContext);
     const user = auth?.user;
@@ -36,6 +39,31 @@ function PortfolioPage(){
 
         fetchPortfolio();
     }, []);
+
+    useEffect(() => {
+        const fetchStockData = async () => {
+            const stockData = [];
+            const userStocks = userPortfolio?.stocks_owned
+            for (let i = 0; i < userStocks?.length; i++) {
+                let stockSymbol = userPortfolio.stocks_owned[i].stock_symbol
+
+                let response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(stockSymbol)}&token=${encodeURIComponent(FH_API_KEY)}`);
+
+                if(!response.ok) {
+                console.error("Search failed:", response.status, response.statusText);
+                return;
+                }
+
+                const data = await response.json();
+                stockData.push({stockSymbol, currentPrice: data.c, percentChange: data.dp});
+            }
+
+            setStockPrices(stockData);
+        }
+
+        fetchStockData();
+
+    }, [userPortfolio])
 
 
     return(
@@ -101,9 +129,9 @@ function PortfolioPage(){
                             className="bg-neutral-primary border-b border-default">
                                 <td className="px-6 py-4 text-left">{stock_desc} ({stock_symbol}) </td>
                                 <td className="px-6 py-4">{quantity}</td>
-                                <td className="px-6 py-4">*Get Share Price*</td>
-                                <td className="px-6 py-4">*Share Price * Quantity*</td>
-                                <td className="px-6 py-4">*Get 24 Hour Change*</td>
+                                <td className="px-6 py-4">{(stockPrices[index]?.currentPrice).toFixed(2)}</td>
+                                <td className="px-6 py-4">{(quantity * stockPrices[index]?.currentPrice).toFixed(2)}</td>
+                                <td className="px-6 py-4">{stockPrices[index]?.percentChange}</td>
                             </tr>
                         ))}
                     </tbody>
