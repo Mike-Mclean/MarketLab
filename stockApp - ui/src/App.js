@@ -5,11 +5,9 @@ import TradePage from './pages/TradePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import PortfolioPage from './pages/PortfolioPage';
-import AuthContext from './context/AuthProvider';
+import {AuthProvider} from './context/AuthProvider';
 
 function App() {
-  const { auth } = useContext(AuthContext);
-  const user = auth?.user;
 
   return (
     <AuthProvider>

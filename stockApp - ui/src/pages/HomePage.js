@@ -12,6 +12,7 @@ function HomePage() {
         { symbol: "AAPL", price: 0, change: 0 },
         { symbol: "TSLA", price: 0, change: 0 },
         { symbol: "MSFT", price: 0, change: 0 }]);
+    const user = auth?.user;
 
 
     const mockPortfolio = {
@@ -102,7 +103,11 @@ function HomePage() {
 
                 {auth?.accessToken ? (
                     <nav className="space-x-6">
-                        <button className="text-gray-700 hover:text-indigo-600">Portfolio</button>
+                        <button
+                            className="text-gray-700 hover:text-indigo-600"
+                            onClick={() => navigate(`/userPortfolio/${user}`)}
+                            >
+                                Portfolio</button>
                         <button
                             className="text-gray-700 hover:text-indigo-600"
                             onClick={() => navigate("/trade")}>

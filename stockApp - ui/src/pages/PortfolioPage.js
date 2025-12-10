@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import AuthContext from '../context/AuthProvider';
+import usePrivateFetch from '../hooks/usePrivateFetch';
 
 function PortfolioPage(){
-
+    const [userPortfolio, setUserPortfolio] = useState(null);
     const navigate = useNavigate();
     const { auth } = useContext(AuthContext);
     const user = auth?.user;
-
     const privateFetch = usePrivateFetch();
 
     useEffect(() => {
@@ -55,8 +56,50 @@ function PortfolioPage(){
                         Dashboard
                     </button>
                 </nav>
-                <h1 className='font-semibold'>Cash: {userPortfolio?.cash.toFixed(2) ?? "----"}</h1>
             </header>
+
+
+            {/*Portfolio Value Card*/}
+            <div className="mt-10 ml-10 mr-10 bg-white rounded-xl shadow p-8">
+                <h1 className="block text-lg font-medium mb-1">
+                    Portfolio Overview
+                </h1>
+                <p className='font-semibold'>Current Portfolio Value: </p>
+                <p className='font-semibold'>Change: </p>
+                <p className='font-semibold'>Available Cash: {userPortfolio?.cash.toFixed(2)} </p>
+            </div>
+
+            {/*Stock Cards / Table*/}
+            <div className="mt-10 ml-10 mr-10 bg-white rounded-xl shadow p-8">
+                <h1 className="block text-lg font-medium mb-1">
+                    Current Portfolio Holdings
+                </h1>
+                <table>
+                    <tr>
+                        <th>Security Name (Symbol)</th>
+                        <th>Shares in Portfolio</th>
+                        <th>Current Share Price</th>
+                        <th>Total Amount in Portfolio</th>
+                        <th>24 Hour Change</th>
+                    </tr>
+
+                    {userPortfolio?.stocks_owned.map(({stock_desc, stock_symbol, quantity}, index) => (
+                        <tr
+                        key={index}>
+                            <td>{stock_desc} ({stock_symbol}) </td>
+                            <td>{quantity}</td>
+                            <td>*Get Share Price*</td>
+                            <td>*Share Price * Quantity*</td>
+                            <td>*Get 24 Hour Change*</td>
+                        </tr>
+                    ))}
+                </table>
+            </div>
+
+            {/*Allocation*/}
+
+            {/*Last 5 Trades*/}
+
         </div>
     );
 
